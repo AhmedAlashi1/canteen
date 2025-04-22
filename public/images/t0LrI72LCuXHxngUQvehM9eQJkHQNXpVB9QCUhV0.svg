@@ -1,0 +1,22 @@
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <!-- Large Circle -->
+    <circle cx="30%" cy="50%" r="200" fill="#FCF0D5" fill-opacity="0.6"/>
+
+    <!-- Small Blue Circles -->
+    <circle cx="80%" cy="20%" r="50" fill="#21D0ED" fill-opacity="0.6"/>
+    <circle cx="15%" cy="10%" r="25" fill="#21D0ED"/>
+    <circle cx="5%" cy="80%" r="35" fill="#21D0ED" fill-opacity="0.8"/>
+
+    <!-- Semi Transparent Big Shape -->
+    <ellipse cx="60%" cy="80%" rx="300" ry="250" fill="#E6EAF2" fill-opacity="0.5"/>
+
+    <!-- Another small Circle -->
+    <circle cx="90%" cy="90%" r="30" fill="#A5E9E1"/>
+
+    <!-- Small Plus Shape -->
+    <path d="M 5 0 L 5 10 M 0 5 L 10 5" stroke="#21D0ED" stroke-width="2" fill="none" transform="translate(90%, 70%) scale(2)"/>
+
+    <!-- Another Plus -->
+    <path d="M 5 0 L 5 10 M 0 5 L 10 5" stroke="#21D0ED" stroke-width="2" fill="none" transform="translate(30%, 30%) scale(1.5)"/>
+</svg>
+
