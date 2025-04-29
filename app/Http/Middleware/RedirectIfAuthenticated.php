@@ -20,9 +20,15 @@ class RedirectIfAuthenticated
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) {
-                return redirect()->intended('admin/index');
+            switch ($guard) {
+                case 'admin':
+                    return redirect('/admin/index');
+                case 'school':
+                    return redirect('/school/index');
+                default:
+                    return redirect('/home');
             }
+
         }
 
         return $next($request);

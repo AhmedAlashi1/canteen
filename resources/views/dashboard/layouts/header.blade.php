@@ -1,4 +1,7 @@
 <!-- Navbar -->
+@php
+    $user = auth('admin')->check() ? auth('admin')->user() : auth('school')->user();
+@endphp
 <nav
     class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
     id="layout-navbar">
@@ -13,7 +16,7 @@
         <div class="navbar-nav align-items-center">
             <div class="nav-item navbar-search-wrapper mb-0">
                 <span class="d-none d-md-inline-block text-muted fw-normal">
-                    <a class="d-block">{{ auth()->user()->name_en }}</a>
+                    <a class="d-block">{{ $user->name }}</a>
                 </span>
             </div>
         </div>
@@ -38,7 +41,7 @@
                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);"
                    data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="{{ auth()->user()->image ? asset(auth()->user()->image) : asset('dashboard/icon/Group.svg') }}"
+                        <img src="{{ $user->image ? asset($user->image) : asset('dashboard/icon/Group.svg') }}"
                              alt class="rounded-circle" />
                     </div>
                 </a>
@@ -53,7 +56,7 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h6 class="mb-0">{{ auth()->user()->name_en }}</h6>
+                                    <h6 class="mb-0">{{ $user->name }}</h6>
                                     <small class="text-muted">{{__('general.Admin')}}</small>
                                 </div>
                             </div>
@@ -64,7 +67,8 @@
                     </li>
                     <li>
                         <div class="d-grid px-2 pt-2 pb-1">
-                            <form method="post" action="{{ route('Admin.logout') }}">
+
+                            <form method="post" action="{{ route('admin.logout') }}">
                                 @csrf
                                 <button class="btn btn-sm btn-danger btn-logout d-flex justify-content-center">
                                     <small class="align-middle">{{__('general.Logout')}}</small>

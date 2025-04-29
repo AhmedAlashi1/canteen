@@ -9,7 +9,7 @@
     <meta name="description" content="Vuexy admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Vuexy admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="PIXINVENT">
-    <title>{{__('auth.Login Page - Effect Dashboard')}}</title>
+    <title>{{__('auth.Login Page - Smart Canteen Dashboard')}}</title>
     <link rel="apple-touch-icon" href="{{ URL::asset('dashboard/icon/Group.svg') }}">
     <link rel="shortcut icon" type="image/x-icon" href="{{ URL::asset('dashboard/icon/Group.svg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
@@ -61,9 +61,13 @@
                             </a>
                             <h4 class="card-title mb-1">{{__('auth.Welcome to Effect!')}} 👋</h4>
                             <p class="card-text mb-2">{{__('auth.Please sign-in to your account and start the adventure')}}</p>
+                            @php
+                                $prefix = request()->is('*/admin/*') ? 'admin' : 'school';
+                            @endphp
 
-                            <form class="auth-login-form mt-2" method="POST" action="{{ route('login') }}" onsubmit="disableButton()">
+                            <form class="auth-login-form mt-2" method="POST" action="{{ route($prefix .'.login') }}" onsubmit="disableButton()">
                                 @csrf
+                                <input type="hidden" name="user_type" value="{{$prefix}}">
                                 <div class="form-group">
                                     <label for="login-email" class="form-label">{{ __('auth.Email') }}</label>
                                     <input
@@ -78,6 +82,7 @@
                                         autofocus
                                     />
                                 </div>
+
                                 @error('login-email') <span id="login-email-error" class="error"><strong>{{ $message }}</strong></span> @enderror
 
                                 <div class="form-group">

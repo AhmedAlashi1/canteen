@@ -9,11 +9,7 @@
     <script src="https://unpkg.com/feather-icons"></script>
 
 @endsection
-@php
-    $worksNum = \App\Models\Work::all()->count();
-    $servicesNum = \App\Models\Service::all()->count();
-    $MessagesNum = \App\Models\Customer::all()->count();
-@endphp
+
 @section('content')
     <section id="statistics-card">
         <div class="row">
@@ -21,7 +17,7 @@
                 <div class="card">
                     <div class="card-header align-items-start pb-0">
                         <div>
-                            <h2 class="font-weight-bolder">{{$worksNum}}</h2>
+{{--                            <h2 class="font-weight-bolder">{{$worksNum}}</h2>--}}
                             <p class="card-text">{{__('general.works numbers')}}</p>
                         </div>
                         <div class="avatar bg-light-primary" style="padding: 0.27rem;">
@@ -37,7 +33,7 @@
                 <div class="card">
                     <div class="card-header align-items-start pb-0">
                         <div>
-                            <h2 class="font-weight-bolder">{{$servicesNum}}</h2>
+{{--                            <h2 class="font-weight-bolder">{{$servicesNum}}</h2>--}}
                             <p class="card-text">{{__('general.services numbers')}}</p>
                         </div>
                         <div class="avatar bg-light-success" style="padding: 0.27rem;">
@@ -55,7 +51,7 @@
                 <div class="card">
                     <div class="card-header align-items-start pb-0">
                         <div>
-                            <h2 class="font-weight-bolder">{{$MessagesNum}}</h2>
+{{--                            <h2 class="font-weight-bolder">{{$MessagesNum}}</h2>--}}
                             <p class="card-text">{{__('general.messages number')}}</p>
                         </div>
                         <div class="avatar bg-light-warning" style="padding: 0.27rem;">

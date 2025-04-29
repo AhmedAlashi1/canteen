@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -14,11 +15,11 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name_en' => 'Effect Admin',
-            'name_ar' => 'Effect مسسؤول',
+        Admin::create([
+            'name' => 'Super Admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('123456'),
+            'roles_name' => json_encode(['admin']),
         ]);
     }
 }

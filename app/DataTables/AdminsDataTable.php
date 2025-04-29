@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Illuminate\Support\Facades\App;
@@ -27,8 +28,8 @@ class AdminsDataTable extends DataTable
             ->addColumn('action', function ($admin) {
                 return view('components.datatable.actions', [
                     'id' => $admin->id,
-                    'routeEdit' => 'admins.edit',
-                    'routeDelete' => 'admins.destroy',
+                    'routeEdit' => 'admin.admins.edit',
+                    'routeDelete' => 'admin.admins.destroy',
                     'name' => App::getLocale() === 'ar' ? $admin->name_ar : $admin->name_en,
                 ]);
             })
@@ -57,7 +58,7 @@ class AdminsDataTable extends DataTable
      * @param \App\Models\User $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(User $model): QueryBuilder
+    public function query(Admin $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -115,7 +116,7 @@ class AdminsDataTable extends DataTable
             Column::make('email')
                 ->title(__('dataTable.email')) // Translate the title
                 ->addClass('text-center align-middle'),
-            Column::make('name_' . (App::getLocale() === 'ar' ? 'ar' : 'en'))
+            Column::make('name')
                 ->title(__('dataTable.name')) // Translate the title
                 ->addClass('text-center align-middle'),
             Column::make('created_at')

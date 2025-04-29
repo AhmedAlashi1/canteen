@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -16,33 +18,34 @@ class AuthController extends Controller
     }
 
 
-    public function login(LoginRequest $request)
+    public function login(Request $request)
     {
-        $credentials = [
-            'email' => $request->input('login-email'),
-            'password' => $request->input('login-password'),
-        ];
 
-        if (auth('web')->attempt($credentials, $request->filled('remember'))) {
-            if ($request->filled('remember')) {
-                $minutes = 60 * 24 * 90; // 90 days
+        // تحديد نوع المستخدم بناءً على المدخلات
+        $userType = $request->input('user_type'); // إما "admin" أو "school"
+        $credentials = $request->only('login-email', 'login-password');
 
-                // Save the email in a cookie
-                Cookie::queue(cookie('email', $request->input('login-email'), $minutes));
+        $validator = Validator::make($credentials, [
+            'login-email' => 'required|email',
+            'login-password' => 'required',
+        ]);
 
-                // Hash and save the password in a cookie
-                Cookie::queue(cookie('password', $request->input('login-password'), $minutes));
-            } else {
-                // Remove cookies if "Remember Me" is not checked
-                Cookie::queue(Cookie::forget('email'));
-                Cookie::queue(Cookie::forget('password'));
-            }
-
-            return redirect()->intended('/admin/index');
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
         }
 
+        $guard = ($userType == 'admin') ? 'admin' : 'school';
+
+        if (Auth::guard($guard)->attempt([
+            'email' => $credentials['login-email'],
+            'password' => $credentials['login-password']
+        ], $request->filled('remember'))) {
+            return redirect()->route($userType.'.dashboard'); // قم بتوجيهه إلى الصفحة المناسبة للمسؤول
+        }
+
+        // إذا فشل التحقق من البيانات
         return back()->withErrors([
-            'login-email' => __('auth.failed'),
+            'login-email' => 'The provided credentials do not match our records.',
         ]);
     }
 
@@ -51,6 +54,7 @@ class AuthController extends Controller
 
     public function logout(){
         Auth::logout();
-        return redirect()->route('login');
+
+        return redirect()->route('admin.login');
     }
 }

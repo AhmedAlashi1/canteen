@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name_en');
-            $table->string('name_ar')->nullable();
+            $table->string('name');
             $table->string('image')->nullable();
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->enum('status', ['1', '2', '3'])->default('1');
+            $table->string('activation_code')->nullable();
+            $table->integer('resend_code_count')->default(0);
+            $table->text('device_token')->nullable();
+            $table->string('device_type')->nullable(); // مثل ios / android
             $table->rememberToken();
             $table->timestamps();
         });

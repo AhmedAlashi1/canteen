@@ -1,32 +1,27 @@
 <?php
 
-use App\Http\Controllers\Dashboard\AdminController;
-use App\Http\Controllers\Dashboard\AuthController;
 use App\Http\Controllers\Dashboard\ClientSatisfcationsController;
 use App\Http\Controllers\Dashboard\CompanyController;
 use App\Http\Controllers\Dashboard\CustomerController;
-use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\MemberController;
 use App\Http\Controllers\Dashboard\ProcessController;
 use App\Http\Controllers\Dashboard\QuestionController;
-use App\Http\Controllers\Dashboard\ServicesDetailsController;
 use App\Http\Controllers\Dashboard\ServiceController;
+use App\Http\Controllers\Dashboard\ServicesDetailsController;
 use App\Http\Controllers\Dashboard\SettingController;
+use App\Http\Controllers\Dashboard\SolutionServicesController;
 use App\Http\Controllers\Dashboard\TermController;
 use App\Http\Controllers\Dashboard\WorkController;
-use App\Http\Controllers\Dashboard\SolutionServicesController;
 use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\BlogController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ServicesController;
 use App\Http\Controllers\Frontend\TermsController;
-use App\Http\Controllers\LanguageController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
 /*
@@ -41,19 +36,19 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 */
 
 
-Route::group(
-    [
-        'prefix' => LaravelLocalization::setLocale().'/admin/',
-        'middleware' => ['web','guest']
-    ], function(){
-
-    if (!Auth::guard('web')->check()) {
-        // Login Routes
-        Route::get('login',  [AuthController::class, 'showLoginForm'])->name('show.login');
-        Route::post('/login', [AuthController::class, 'login'])->name('login');
-    }
-
-});
+//Route::group(
+//    [
+//        'prefix' => LaravelLocalization::setLocale().'/admin/',
+//        'middleware' => ['web','guest']
+//    ], function(){
+//
+//    if (!Auth::guard('web')->check()) {
+//        // Login Routes
+//        Route::get('login',  [AuthController::class, 'showLoginForm'])->name('show.login');
+//        Route::post('/login', [AuthController::class, 'login'])->name('login');
+//    }
+//
+//});
 
 Route::group(
     [
@@ -81,53 +76,53 @@ Route::group(
 
     ], function(){
 
-    Route::group(['middleware' => ['auth:web']], function(){
-
-        Route::post('/logout', [AuthController::class,'logout'])->name('Admin.logout');
-
-        // Dashboard Routes
-        Route::get('index', [DashboardController::class,'index'])->name('dashboard');
-        Route::resource('admins',AdminController::class);
-        Route::resource('services',ServiceController::class);
-
-        Route::get('service-details/{id}',[ServicesDetailsController::class,'index'])->name('ServiceDetails.index');
-        Route::get('service-details/create/{id}',[ServicesDetailsController::class,'create'])->name('ServiceDetails.create');
-        Route::post('service-details/store',[ServicesDetailsController::class,'store'])->name('ServiceDetails.store');
-        Route::get('service-details/edit/{id}',[ServicesDetailsController::class,'edit'])->name('ServiceDetails.edit');
-        Route::put('service-details/update/{id}',[ServicesDetailsController::class,'update'])->name('ServiceDetails.update');
-        Route::delete('service-details/destroy/{id}',[ServicesDetailsController::class,'destroy'])->name('ServiceDetails.destroy');
-
-
-        Route::get('software-solution-services/{id}',[SolutionServicesController::class,'index'])->name('SolutionServices.index');
-        Route::get('software-solution-services/create/{id}',[SolutionServicesController::class,'create'])->name('SolutionServices.create');
-        Route::post('software-solution-services/store',[SolutionServicesController::class,'store'])->name('SolutionServices.store');
-        Route::get('software-solution-services/edit/{id}',[SolutionServicesController::class,'edit'])->name('SolutionServices.edit');
-        Route::put('software-solution-services/update/{id}',[SolutionServicesController::class,'update'])->name('SolutionServices.update');
-        Route::delete('software-solution-services/destroy/{id}',[SolutionServicesController::class,'destroy'])->name('SolutionServices.destroy');
-
-
-        Route::resource('client_satisfactions',ClientSatisfcationsController::class);
-        Route::resource('company',CompanyController::class);
-        Route::get('customer',[CustomerController::class,'index'])->name('customer.index');
-        Route::delete('customer/{customer}',[CustomerController::class,'destroy'])->name('customer.destroy');
-        Route::resource('work',WorkController::class);
-        Route::get('/work/update-status/{id}', [WorkController::class, 'updateStatus'])->name('update-work-status');
-        Route::get('/work/update-contact-us/{id}', [WorkController::class, 'updateContactUs'])->name('update-work-contactUs');
-        Route::post('/work/new-images/{id}', [WorkController::class, 'AddNewImage'])->name('work.new-image');
-        Route::delete('work/images/{image}',[WorkController::class,'deleteImage'])->name('work.image.delete');
-        Route::resource('member',MemberController::class);
-        Route::resource('question',QuestionController::class);
-        Route::resource('term',TermController::class);
-        Route::resource('process',ProcessController::class);
-        Route::resource('blog',\App\Http\Controllers\Dashboard\BlogController::class);
-        Route::post('/blog/upload-image', [\App\Http\Controllers\Dashboard\BlogController::class, 'uploadCkeditorImage'])->name('blog.ckeditor.upload');
-        Route::get('/blog/update-default/{id}', [\App\Http\Controllers\Dashboard\BlogController::class, 'updateDefault'])->name('update-blog-default');
-
-        // settings
-        Route::get('settings/',[SettingController::class, 'index'])->name('settings.index');
-        Route::post('settings/update', [SettingController::class, 'update'])->name('settings.update');
-
-    });
+//    Route::group(['middleware' => ['auth:web']], function(){
+//
+//        Route::post('/logout', [AuthController::class,'logout'])->name('Admin.logout');
+//
+//        // Dashboard Routes
+//        Route::get('index', [DashboardController::class,'index'])->name('dashboard');
+//        Route::resource('admins',AdminController::class);
+//        Route::resource('services',ServiceController::class);
+//
+//        Route::get('service-details/{id}',[ServicesDetailsController::class,'index'])->name('ServiceDetails.index');
+//        Route::get('service-details/create/{id}',[ServicesDetailsController::class,'create'])->name('ServiceDetails.create');
+//        Route::post('service-details/store',[ServicesDetailsController::class,'store'])->name('ServiceDetails.store');
+//        Route::get('service-details/edit/{id}',[ServicesDetailsController::class,'edit'])->name('ServiceDetails.edit');
+//        Route::put('service-details/update/{id}',[ServicesDetailsController::class,'update'])->name('ServiceDetails.update');
+//        Route::delete('service-details/destroy/{id}',[ServicesDetailsController::class,'destroy'])->name('ServiceDetails.destroy');
+//
+//
+//        Route::get('software-solution-services/{id}',[SolutionServicesController::class,'index'])->name('SolutionServices.index');
+//        Route::get('software-solution-services/create/{id}',[SolutionServicesController::class,'create'])->name('SolutionServices.create');
+//        Route::post('software-solution-services/store',[SolutionServicesController::class,'store'])->name('SolutionServices.store');
+//        Route::get('software-solution-services/edit/{id}',[SolutionServicesController::class,'edit'])->name('SolutionServices.edit');
+//        Route::put('software-solution-services/update/{id}',[SolutionServicesController::class,'update'])->name('SolutionServices.update');
+//        Route::delete('software-solution-services/destroy/{id}',[SolutionServicesController::class,'destroy'])->name('SolutionServices.destroy');
+//
+//
+//        Route::resource('client_satisfactions',ClientSatisfcationsController::class);
+//        Route::resource('company',CompanyController::class);
+//        Route::get('customer',[CustomerController::class,'index'])->name('customer.index');
+//        Route::delete('customer/{customer}',[CustomerController::class,'destroy'])->name('customer.destroy');
+//        Route::resource('work',WorkController::class);
+//        Route::get('/work/update-status/{id}', [WorkController::class, 'updateStatus'])->name('update-work-status');
+//        Route::get('/work/update-contact-us/{id}', [WorkController::class, 'updateContactUs'])->name('update-work-contactUs');
+//        Route::post('/work/new-images/{id}', [WorkController::class, 'AddNewImage'])->name('work.new-image');
+//        Route::delete('work/images/{image}',[WorkController::class,'deleteImage'])->name('work.image.delete');
+//        Route::resource('member',MemberController::class);
+//        Route::resource('question',QuestionController::class);
+//        Route::resource('term',TermController::class);
+//        Route::resource('process',ProcessController::class);
+//        Route::resource('blog',\App\Http\Controllers\Dashboard\BlogController::class);
+//        Route::post('/blog/upload-image', [\App\Http\Controllers\Dashboard\BlogController::class, 'uploadCkeditorImage'])->name('blog.ckeditor.upload');
+//        Route::get('/blog/update-default/{id}', [\App\Http\Controllers\Dashboard\BlogController::class, 'updateDefault'])->name('update-blog-default');
+//
+//        // settings
+//        Route::get('settings/',[SettingController::class, 'index'])->name('settings.index');
+//        Route::post('settings/update', [SettingController::class, 'update'])->name('settings.update');
+//
+//    });
 
 });
 

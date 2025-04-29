@@ -19,6 +19,27 @@ class RouteServiceProvider extends ServiceProvider
      */
     public const HOME = '/admin/index';
 
+
+    public function map()
+    {
+        $this->mapWebRoutes();
+        $this->mapAdminRoutes();
+        $this->mapSchoolRoutes();
+    }
+
+    protected function mapAdminRoutes()
+    {
+        Route::middleware('web')
+            ->prefix('admin')
+            ->group(base_path('routes/admin.php'));
+    }
+
+    protected function mapSchoolRoutes()
+    {
+        Route::middleware('web')
+            ->prefix('school')
+            ->group(base_path('routes/school.php'));
+    }
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
      */
@@ -36,5 +57,10 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
+        Route::middleware('web')
+            ->group(base_path('routes/admin.php'));
+
+        Route::middleware('web')
+            ->group(base_path('routes/school.php'));
     }
 }

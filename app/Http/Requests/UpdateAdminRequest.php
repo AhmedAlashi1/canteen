@@ -19,11 +19,10 @@ class UpdateAdminRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'name_ar' => 'required|string|max:255',
             'email' => 'required|email',
             'password' => 'nullable|string|min:6|confirmed',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            Rule::unique('users', 'email')->ignore($this->id),
+            Rule::unique('admin', 'email')->ignore($this->id),
         ];
     }
 
@@ -31,7 +30,6 @@ class UpdateAdminRequest extends FormRequest
     {
         return [
             'name.required' => trans('validation.required', ['attribute' => trans('validation.attributes.name')]),
-            'name_ar.required' => trans('validation.required', ['attribute' => trans('validation.attributes.name_ar')]),
 
             'email.required' => trans('validation.required', ['attribute' => trans('validation.attributes.email')]),
             'email.email' => trans('validation.email', ['attribute' => trans('validation.attributes.email')]),

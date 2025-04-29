@@ -38,6 +38,18 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
+            'provider' => 'admins',
+        ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',  // كما هو
+        ],
+        'school' => [
+            'driver' => 'session',
+            'provider' => 'schools',
+        ],
+        'api' => [
+            'driver' => 'sanctum',
             'provider' => 'users',
         ],
     ],
@@ -64,6 +76,15 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+        'schools' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\School::class,
+        ],
+
 
         // 'users' => [
         //     'driver' => 'database',
