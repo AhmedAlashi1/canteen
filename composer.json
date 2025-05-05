@@ -12,7 +12,6 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "mcamara/laravel-localization": "^2.0",
-        "spatie/laravel-sitemap": "^6.2",
         "yajra/laravel-datatables": "10.0",
         "yoeunes/toastr": "^2.3"
     },

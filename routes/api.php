@@ -78,7 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //child
     Route::apiResource('child', ChildController::class);
-
+//        "spatie/laravel-sitemap": "^6.2",
     //order
     Route::post('order', [OrderController::class, 'store']);
 
