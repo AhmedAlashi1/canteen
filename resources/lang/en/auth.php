@@ -6,6 +6,8 @@ return[
     'Remember Me'=>'Remember Me',
     'Please sign-in to your account and start the adventure'=>'Please sign-in to your account and start the adventure',
     'Welcome to Effect!'=>'Welcome to Effect!',
-    'Effect'=>'Effect',
+    'Effect'=>'Smart Canteen',
     'Login Page - Effect Dashboard'=>'Login Page - Effect Dashboard',
+    'Welcome to smart Canteen!' => 'Welcome to Smart Canteen!',
+    'Login Page - Smart Canteen Dashboard' => 'Login Page - Smart Canteen Dashboard'
 ];

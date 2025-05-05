@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('favorites', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');  // ربط مع المستخدم
-            $table->foreignId('prodect_id')->constrained('products')->onDelete('cascade');  // ربط مع المنتج
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');  // ربط مع المنتج
             $table->timestamps();
         });
     }

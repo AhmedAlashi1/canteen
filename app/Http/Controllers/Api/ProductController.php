@@ -47,7 +47,6 @@ class ProductController extends Controller
                 ->paginate(20);
             $data = SchoolProductResource::collection($products);
         }elseif ($tyepe == 'store'){
-//            return 'a';
             $products = Product::where('cat_id', $category_id)
                 ->where('quantity', '>', 0)
                 ->where('type', 'store')
@@ -61,7 +60,6 @@ class ProductController extends Controller
                 ->orderBy('id', 'desc')
                 ->paginate(20);
             $data = ProductResource::collection($products);
-
         }else{
             return sendError('Type not found');
         }
@@ -79,13 +77,25 @@ class ProductController extends Controller
         ], 'Products retrieved successfully');
     }
 
-    public function show($id)
+    public function show(Request $request , $id)
     {
-        $product = SchoolProduct::where('id', $id)->with('product.category')->first();
-        if (!$product) {
-            return sendError('Product not found');
+
+        $type = $request->type;
+        if ($type == 'school'){
+            $product = SchoolProduct::where('id', $id)->with('product.category')->first();
+            if (!$product) {
+                return sendError('Product not found');
+            }
+            return sendResponse(new SchoolProductResource($product), 'Product retrieved successfully');
+
+        }else{
+            $product = Product::where('id', $id)->with('category','sizes','images')->first();
+            if (!$product) {
+                return sendError('Product not found');
+            }
+            return sendResponse(new ProductResource($product), 'Product retrieved successfully');
         }
-        return sendResponse(new SchoolProductResource($product), 'Product retrieved successfully');
+
     }
 
 

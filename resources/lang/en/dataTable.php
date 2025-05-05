@@ -50,6 +50,12 @@ return [
     'will not able to revert' => 'will not able to revert',
     'Delete Operation' => 'Delete Operation',
     'service' => 'Service',
+    'code'=> 'Code',
+    'country_code'=> 'Country Code',
+    'link'=> 'Link',
+    'slug'=> 'Slug',
+    'company_name' => 'Company Name',
+    'whatsapp' => 'Whatsapp',
 
 
 ];

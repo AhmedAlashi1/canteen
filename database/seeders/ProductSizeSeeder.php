@@ -17,6 +17,7 @@ class ProductSizeSeeder extends Seeder
             'product_id' => $product->id,
             'size' => 'Small',
             'quantity' => 10,
+
         ]);
 
         ProductSize::create([

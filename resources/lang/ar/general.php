@@ -135,6 +135,27 @@ return [
     'Secondary' => 'ثانوي',
     'City' => 'المدينة',
     'regions' => 'الأحياء',
+    'Cities' => 'المدن',
+    'Add cities' => 'إضافة مدينة',
+    'country_code' => 'كود الدولة',
+    'code' => 'الكود',
+    'Update city' => 'تحديث المدينة',
+    'Add regions' => 'إضافة حي',
+    'update regions' => 'تحديث الحي',
+    'contactUs'=> 'اتصل بنا',
+    'Ads'=> 'الإعلانات',
+    'Payment Methods'=> 'طرق الدفع',
+    'Add PaymentMethod' => 'إضافة طريقة دفع',
+    'Update PaymentMethod' => 'تحديث طريقة الدفع',
+    'slug' => 'الرابط',
+    'Suppliers'=> 'الموردين',
+    'Add Supplier' => 'إضافة مورد',
+    'Update Supplier' => 'تحديث المورد',
+    'phone' => 'الهاتف',
+    'email' => 'البريد الإلكتروني',
+    'company_name' => 'اسم الشركة',
+    'whatsapp' => 'واتساب',
+
 
 
 ];

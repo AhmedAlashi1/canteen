@@ -138,6 +138,35 @@ return[
     'Secondary' => 'Secondary',
         'City' => 'City',
     'region' => 'Regions',
+    'Cities' => 'Cities',
+    'Add cities' => 'Add cities',
+    'country_code' => 'Country Code',
+    'code' => 'Code',
+    'Update city' => 'Update city',
+    'Add regions' => 'Add regions',
+    'update regions' => 'Update region',
+    'contactUs' => 'Contact Us',
+    'Ads' => 'Ads',
+    'Add Ads' => 'Add Ads',
+    'Update Ads' => 'Update Ads',
+    'link' => 'Link',
+    'Payment Methods'=>'Payment Methods',
+    'Add PaymentMethod'=>'Add Payment Method',
+    'Update PaymentMethod'=>'Update Payment Method',
+    'slug'=>'Slug',
+    'Suppliers'=>'Suppliers',
+    'Add Supplier'=>'Add Supplier',
+    'Update Supplier'=>'Update Supplier',
+    'company_name'=>'Company Name',
+    'phone'=>'Phone',
+    'whatsapp'=>'WhatsApp',
+    'email'=>'Email',
+
+
+
+
+
+
 
 
 ];

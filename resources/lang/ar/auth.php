@@ -8,5 +8,7 @@ return [
     'Welcome to Effect!' => 'مرحبًا بك في Effect!',
     'Effect' => 'Effect',
     'Login Page - Effect Dashboard' => 'صفحة تسجيل الدخول - لوحة التحكم في Effect',
+    'Welcome to smart Canteen!' => 'مرحبًا بك في الكانتين الذكي',
+    'Login Page - Smart Canteen Dashboard' => 'صفحة تسجيل الدخول - لوحة التحكم في الكانتين الذكي',
 ];
 

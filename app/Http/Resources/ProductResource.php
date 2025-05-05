@@ -16,6 +16,11 @@ class ProductResource extends JsonResource
     {
         $name = $request->header('lang') == 'ar' ? 'name_ar' : 'name_en';
         $description = $request->header('lang') == 'ar' ? 'description_ar' : 'description_en';
+        //favorite
+        $favorite = $this->favorites()->where('user_id', auth()->user()->id)->first();
+        if (auth()->user()) {
+
+        }
         return [
             'id' => $this->id,
             'cat_id' => $this->cat_id,
@@ -30,7 +35,7 @@ class ProductResource extends JsonResource
             'images' => $this->images ? $this->images->map(function ($image) {
                 return url($image->image);
             }) : null,
-
+            'is_favorite' => $favorite ? true : false,
 
 
 

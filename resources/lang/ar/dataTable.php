@@ -49,5 +49,11 @@ return [
     'will not able to revert' => 'لن تستطيع استرجاع المحذوف',
     'Delete Operation' => 'عملية الحذف',
     'service' => 'الخدمات',
+    'code'=> 'الكود',
+    'link'=> 'الرابط',
+    'slug'=> 'الرابط الدائم',
+    'company_name' => 'اسم الشركة',
+    'whatsapp' => 'واتساب',
+
 
 ];

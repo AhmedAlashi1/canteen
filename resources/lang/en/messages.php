@@ -32,5 +32,6 @@ return [
     'Updated successfully' => 'Updated successfully',
     'An error occurred while creating the process. Please try again.' => 'An error occurred while creating the process. Please try again.',
     'The our process is not exist' => 'The our process is not exist',
+    'updated successfully' => 'updated successfully',
 
 ];

@@ -31,5 +31,6 @@ return [
     'Updated successfully' => 'تم التحديث بنجاح',
     'An error occurred while creating the process. Please try again.' => 'حدث خطأ أثناء إنشاء نهح جديد. يرجى المحاولة مرة أخرى.',
     'The our process is not exist' => 'النهج غير موجود.',
+    'updated successfully' => 'تم التحديث بنجاح.',
 ];
 

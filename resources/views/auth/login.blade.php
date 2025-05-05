@@ -59,7 +59,7 @@
                                 <img src="{{ asset('dashboard/icon/Group.svg') }}" height="80" alt="Logo" class="mr-1">
 {{--                                <h2 class="brand-text text-primary mb-0">{{__('auth.Effect')}}</h2>--}}
                             </a>
-                            <h4 class="card-title mb-1">{{__('auth.Welcome to Effect!')}} 👋</h4>
+                            <h4 class="card-title mb-1">{{__('auth.Welcome to smart Canteen!')}} 👋</h4>
                             <p class="card-text mb-2">{{__('auth.Please sign-in to your account and start the adventure')}}</p>
                             @php
                                 $prefix = request()->is('*/admin/*') ? 'admin' : 'school';

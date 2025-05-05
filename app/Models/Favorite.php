@@ -11,7 +11,7 @@ class Favorite extends Model
 
     protected $fillable = [
         'user_id',
-        'prodect_id',
+        'product_id',
     ];
 
     // العلاقة مع المستخدم

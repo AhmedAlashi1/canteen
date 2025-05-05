@@ -15,7 +15,8 @@ use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PaymentMethodController;
-use App\Http\Controllers\Api\ProductStoreController;
+use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,13 +36,6 @@ Route::get('city', CityController::class);
 Route::get('region/{city_id?}', RegionController::class);
 Route::post('category', CategoryController::class);
 Route::get('payment-method', PaymentMethodController::class);
-//payment-method
-
-
-
-
-
-
 
 
 Route::controller(AuthController::class)->group(function(){
@@ -71,16 +65,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('school', [SchoolController::class, 'index']);
     Route::get('school/{id}', [SchoolController::class, 'show']);
 
-    //prodect canteen
+    //product
     Route::post('product', [ProductController::class, 'index']);
-    Route::get('product/{id}', [ProductController::class, 'show']);
+    Route::post('product/{id}', [ProductController::class, 'show']);
 
-    //product store
-    Route::post('product-store', [ProductStoreController::class, 'index']);
+    //favorite
+    Route::get('favorite', [FavoriteController::class, 'index']);
+    Route::post('favorite', [FavoriteController::class, 'store']);
+    Route::delete('favorite/{id}', [FavoriteController::class, 'destroy']);
+
 
 
     //child
     Route::apiResource('child', ChildController::class);
+
+    //order
+    Route::post('order', [OrderController::class, 'store']);
 
 
 });
