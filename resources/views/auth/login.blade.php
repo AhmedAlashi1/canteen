@@ -62,7 +62,9 @@
                             <h4 class="card-title mb-1">{{__('auth.Welcome to smart Canteen!')}} 👋</h4>
                             <p class="card-text mb-2">{{__('auth.Please sign-in to your account and start the adventure')}}</p>
                             @php
-                                $prefix = request()->is('*/admin/*') ? 'admin' : 'school';
+//                                $prefix = request()->is('*/admin/*') ? 'admin' : 'school';
+                                $prefix = 'admin';
+
                             @endphp
 
                             <form class="auth-login-form mt-2" method="POST" action="{{ route($prefix .'.login') }}" onsubmit="disableButton()">

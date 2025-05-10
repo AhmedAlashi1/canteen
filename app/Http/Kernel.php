@@ -4,6 +4,7 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
+
 class Kernel extends HttpKernel
 {
     /**
@@ -41,7 +42,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
 //            \App\Http\Middleware\SetLanguage::class,
             \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
-            \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
+//            \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
             \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
 
         ],
@@ -84,4 +85,6 @@ class Kernel extends HttpKernel
         'admin.auth' => \App\Http\Middleware\RedirectIfNotAdmin::class,
         'school.auth' => \App\Http\Middleware\RedirectIfNotSchool::class,
     ];
+
+
 }

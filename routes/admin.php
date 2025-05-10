@@ -71,10 +71,6 @@ Route::prefix(LaravelLocalization::setLocale() . '/admin')->middleware(['web'])
             Route::get('supplier/select', [SupplierController::class, 'select'])->name('suppliers.select');
 
 
-
-
-
-
         });
     });
 
