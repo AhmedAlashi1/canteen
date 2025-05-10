@@ -30,6 +30,7 @@ class User extends Authenticatable
         'device_token',
         'device_type',
         'remember_token',
+        'country_code'
 
         ];
 

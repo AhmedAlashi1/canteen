@@ -18,6 +18,7 @@ class AuthController extends Controller
 //            'country_code' => 'required_with:phone|string|size:2',
 //            'phone' => 'required|max:191|phone:country_code',
             'phone' => 'required|max:191',
+            'country_code' => 'required|max:191',
         ]);
 
         if ($validator->fails()) {
@@ -89,6 +90,7 @@ class AuthController extends Controller
         $data['phone'] = $phone;
         $data['device_token'] = $request->device_token;
         $data['device_type'] = $request->device_type;
+        $data['country_code'] = $request->country_code;
         $data['status'] = '2';
 
         $user = User::query()->create($data);
@@ -110,7 +112,12 @@ class AuthController extends Controller
     public function activateAccount(Request $request)
     {
 //        $user = auth()->user();
-        $phone =$request->phone;
+        $validator = Validator::make($request->all(), [
+            'activation_code' => 'required|numeric|digits:4',
+            'phone' => 'required|max:191',
+            'country_code' => 'required|max:191',
+        ]);
+        $phone = $request->country_code . $request->phone;
             $user = User::where('phone',$phone)->first();
         if (!$user){
             return sendError('user not found');
