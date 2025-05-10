@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('usres', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //phone_not_code
             $table->string('phone_not_code')->after('phone')->nullable();
         });
