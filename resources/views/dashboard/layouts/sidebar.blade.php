@@ -36,7 +36,7 @@
         <!-- Management Section -->
         @if (Auth::guard('admin')->check())
         <li class="menu-header">@lang('general.Management')</li>
-        <li class="menu-item {{ Route::is('admins.*') ? 'active' : '' }}">
+        <li class="menu-item {{ Route::is('admin.admins.*') ? 'active' : '' }}">
             <a href="{{ route('admin.admins.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-user-shield"></i>
                 <div>{{__('general.Admins')}}</div>
@@ -45,43 +45,63 @@
 
         <!-- General Section -->
         <li class="menu-header">@lang('general.General')</li>
-        <li class="menu-item {{ Route::is('schools.*') ? 'active' : '' }}">
+        <li class="menu-item {{ Route::is('admin.schools.*') ? 'active' : '' }}">
             <a href="{{ route('admin.schools.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-briefcase"></i>
                 <div>{{__('general.schools')}}</div>
             </a>
         </li>
-        <li class="menu-item {{ Route::is('suppliers.*') ? 'active' : '' }}">
+        <li class="menu-item {{ Route::is('admin.suppliers.*') ? 'active' : '' }}">
             <a href="{{ route('admin.suppliers.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-user"></i>
                 <div>{{__('general.Suppliers')}}</div>
             </a>
-        <li class="menu-item {{ Route::is('cities.*') ? 'active' : '' }}">
+        <li class="menu-item {{ Route::is('admin.cities.*') ? 'active' : '' }}">
             <a href="{{ route('admin.cities.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-map"></i>
                 <div>{{__('general.Cities')}}</div>
             </a>
         </li>
 
-        <li class="menu-item {{ Route::is('contact-us.*') ? 'active' : '' }}">
+        <li class="menu-item {{ Route::is('admin.contact-us.*') ? 'active' : '' }}">
             <a href="{{ route('admin.contact-us.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-message-2"></i>
                 <div>{{__('general.contactUs')}}</div>
             </a>
         </li>
 
-        <li class="menu-item {{ Route::is('ads.*') ? 'active' : '' }}">
+        <li class="menu-item {{ Route::is('admin.ads.*') ? 'active' : '' }}">
             <a href="{{ route('admin.ads.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-ad"></i>
                 <div>{{__('general.Ads')}}</div>
             </a>
         </li>
-        <li class="menu-item {{ Route::is('payment-methods.*') ? 'active' : '' }}">
+        <li class="menu-item {{ Route::is('admin.payment-methods.*') ? 'active' : '' }}">
             <a href="{{ route('admin.payment-methods.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-credit-card"></i>
                 <div>{{__('general.Payment Methods')}}</div>
             </a>
         </li>
+        <li class="menu-item {{ Route::is('admin.coupons.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.coupons.index') }}" class="menu-link side-sclaex">
+                <i class="menu-icon tf-icons ti ti-tag"></i>
+                <div>{{__('general.Coupons')}}</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ Route::is('admin.categories.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.categories.index') }}" class="menu-link side-sclaex">
+                <i class="menu-icon tf-icons ti ti-category"></i>
+                <div>{{__('general.Categories')}}</div>
+            </a>
+        </li>
+        <li class="menu-item {{ Route::is('admin.products.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.products.index') }}" class="menu-link side-sclaex">
+                <i class="menu-icon tf-icons ti ti-package"></i>
+                <div>{{__('general.Products')}}</div>
+            </a>
+        </li>
+
 
 
         <!-- Settings Section -->

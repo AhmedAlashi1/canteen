@@ -66,4 +66,22 @@ class SupplierController extends Controller
         $supplier->delete();
         return response()->json('success');
     }
+
+    public function select(Request $request)
+    {
+        $q = $request->get('q');
+        $suppliers = Supplier::where('name', 'like', '%' . $q . '%')
+            ->select('id', 'name')
+            ->limit(20)
+            ->get();
+        $suppliers = $suppliers->map(function ($supplier) {
+            return [
+                'id' => $supplier->id,
+                'name' => $supplier->name ,
+            ];
+        });
+
+        return response()->json($suppliers);
+    }
+
 }

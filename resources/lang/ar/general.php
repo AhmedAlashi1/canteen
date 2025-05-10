@@ -155,8 +155,29 @@ return [
     'email' => 'البريد الإلكتروني',
     'company_name' => 'اسم الشركة',
     'whatsapp' => 'واتساب',
-
-
+    'Coupons'=> 'الكوبونات',
+    'Add Coupon'=> 'إضافة كوبون',
+    'Update Coupon'=> 'تحديث الكوبون',
+    'Type'=>'نوع الكوبون',
+    'Percentage'=>'نسبة مئوية',
+    'Fixed'=>'ثابت',
+    'Discount Value'=>'قيمة الخصم',
+    'use_number'=>'عدد الاستخدامات',
+    'Expires At'=>'تاريخ الانتهاء',
+    'Add Category'     => 'إضافة قسم',
+    'name_ar'          => 'الاسم بالعربية',
+    'name_en'          => 'الاسم بالإنجليزية',
+    'description_ar'   => 'الوصف بالعربية',
+    'description_en'   => 'الوصف بالإنجليزية',
+    'status'           => 'الحالة',
+    'type'             => 'النوع',
+    'school'           => 'مدرسة',
+    'store'            => 'متجر',
+    'active'           => 'نشط',
+    'inactive'         => 'غير نشط',
+    'image'            => 'الصورة',
+    'Categories'       => 'الأقسام',
+    'Edit Category' => 'تعديل القسم',
 
 ];
 

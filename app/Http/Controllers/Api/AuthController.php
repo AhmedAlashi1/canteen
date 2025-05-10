@@ -35,8 +35,9 @@ class AuthController extends Controller
             return sendError($errMsg);
         }
 
-        $token = $user->createToken('authToken')->plainTextToken;
-        $activation_code = rand(1111, 9999);
+//        $token = $user->createToken('authToken')->plainTextToken;
+//        $activation_code = rand(1111, 9999);
+        $activation_code = 1234;
         if ($phone === '+96555558718') {
             $activation_code = 1234;
         }
@@ -59,7 +60,7 @@ class AuthController extends Controller
 
         $data = [
             'user' => new UserResource($user),
-            'token' => $token
+//            'token' => $token
         ];
 
 
@@ -91,7 +92,7 @@ class AuthController extends Controller
         $data['status'] = '2';
 
         $user = User::query()->create($data);
-        $success['token'] = $user->createToken('MyAuthApp')->plainTextToken;
+//        $success['token'] = $user->createToken('MyAuthApp')->plainTextToken;
         $success['name'] = $user->name;
 
 //        $this->sendVerificationCode($user->phone, $user->activation_code);
@@ -108,8 +109,12 @@ class AuthController extends Controller
 
     public function activateAccount(Request $request)
     {
-        $user = auth()->user();
-
+//        $user = auth()->user();
+        $phone =$request->phone;
+            $user = User::where('phone',$phone)->first();
+        if (!$user){
+            return sendError('user not found');
+        }
         if (empty($request->input('activation_code'))) {
             return sendError('activation_code_missing');
         }
@@ -144,10 +149,12 @@ class AuthController extends Controller
 
         try {
             if ($user->save()) {
+                $token = $user->createToken('authToken')->plainTextToken;
                 $userdata = [
                     'user_id' => $user->id,
                     'phone' => $user->phone,
                     'name' => $user->name,
+                    'token' => $token
                 ];
                 return sendResponse($userdata);
             } else {

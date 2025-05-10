@@ -8,7 +8,10 @@ use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\RegionController;
 use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\CouponsController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Dashboard\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +59,21 @@ Route::prefix(LaravelLocalization::setLocale() . '/admin')->middleware(['web'])
 
             //Suppliers
             Route::resource('suppliers', SupplierController::class);
+
+            //coupons
+            Route::resource('coupons', CouponsController::class);
+            //categories
+            Route::resource('categories', CategoryController::class);
+
+             // Products resource
+            Route::resource('products', ProductsController::class);
+            Route::get('school/select', [SchoolController::class, 'select'])->name('schools.select');
+            Route::get('supplier/select', [SupplierController::class, 'select'])->name('suppliers.select');
+
+
+
+
+
 
         });
     });
