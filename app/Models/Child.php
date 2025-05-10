@@ -28,6 +28,11 @@ class Child extends Model
         return $this->belongsTo(School::class);
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public static $rulesApi = [
         'school_id' => 'required|exists:schools,id',
         'name' => 'required|string|max:255',

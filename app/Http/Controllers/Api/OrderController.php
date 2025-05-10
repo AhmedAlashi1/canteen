@@ -348,4 +348,140 @@ class OrderController extends Controller
     }
 
 
+    public function getUserOrders(Request $request)
+    {
+        try {
+            $user = $request->user();
+            if (!$user) {
+                return sendError('المستخدم غير مسجل دخول.');
+            }
+
+            $lang = $request->header('lang', 'ar');
+            $nameField = $lang == 'ar' ? 'name_ar' : 'name_en';
+
+            // التحقق من معلمات التقسيم
+            $page = max(1, (int)$request->input('page', 1));
+            $size = min(100, max(1, (int)$request->input('size', 10)));
+
+            $query = Order::with([
+                'child.school',
+                'orderDays',
+                'child' => fn($q) => $q->where('user_id', $user->id)
+            ])
+                ->where('type', 'school')
+                ->where('status', 'completed')
+                ->where('payment_status', 'paid')
+                ->orderBy('created_at', 'desc');
+
+            // الحصول على النتائج مع التقسيم
+            $paginator = $query->paginate(
+                $size,
+                ['*'],
+                'page',
+                $page
+            );
+
+            $orders = collect($paginator->items())->map(function ($order) use ($nameField) {
+                if (!$order->child) return null;
+
+                return [
+                    'process_number' => '#' . str_pad($order->id, 7, '0', STR_PAD_LEFT),
+                    'child' => [
+                        'name' => $order->child->name,
+                        'level' => $order->child->level,
+                        'student_number' => $order->child->student_number,
+                        'image' => asset($order->child->image),
+                        'school_name' => $order->child->school->{$nameField},
+                    ],
+                    'details' => [
+                        'days_count' => $order->orderDays->count(),
+                        'total_cost' => number_format($order->total, 3) . ' KWD',
+                        'time_ago' => $order->created_at->diffForHumans()
+                    ],
+                ];
+            })->filter();
+
+            // إعداد بيانات التقسيم
+            $paginationData = [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'last_page' => $paginator->lastPage(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem()
+            ];
+
+            return sendResponse([
+                'data' => $orders,
+                'pagination' => $paginationData
+            ], 'تم جلب الطلبات بنجاح.');
+
+        } catch (\Exception $e) {
+            Log::error('Orders API Error: '.$e->getMessage());
+            return sendError('حدث خطأ غير متوقع.', [], 500);
+        }
+    }
+
+    public function showDetails(Request $request, $id)
+    {
+        $lang = strtolower($request->header('lang', 'en'));
+
+        $order = Order::with([
+            'child.user',
+            'child.school',
+            'orderProducts.product',
+            'orderDays',
+            'payment'
+        ])->find($id);
+
+        if (!$order) {
+            return sendError('الطلب غير موجود.');
+        }
+
+        $child = $order->child;
+        $user = $child->user;
+        $school = $child->school;
+
+        $products = $order->orderProducts->map(function ($item) use ($lang) {
+            $product = $item->product;
+            return [
+                'name'     => $lang === 'ar' ? $product->name_ar : $product->name_en,
+                'price'    => round($product->price, 3),
+                'image'    => url($product->image),
+                'quantity' => $item->quantity,
+            ];
+        });
+
+        $days = $order->orderDays->map(function ($day) {
+            return \Carbon\Carbon::parse($day->date)->translatedFormat('l - d/m/Y');
+        });
+
+        $paymentMethod = $order->payment;
+
+        return sendResponse([
+            'order_id' => $order->id,
+            'process_number' => '#' . str_pad($order->id, 7, '0', STR_PAD_LEFT),
+            'created_at' => $order->created_at->diffForHumans(),
+
+            'child' => [
+                'name'   => $child->name,
+                'grade'  => $child->level,
+                'school' => $school?->{"name_{$lang}"},
+                'image'  => url($child->image),
+            ],
+
+            'products' => $products,
+            'applied_days' => $days,
+            'payment_method' => [
+                'name' => $paymentMethod?->{"name_{$lang}"},
+                'image' => $paymentMethod ? url($paymentMethod->image) : null
+            ],
+            'price_summary' => [
+                'product_total' => round($order->total + $order->discount, 3),
+                'discount' => round($order->discount, 3),
+                'final_total' => round($order->total, 3),
+            ]
+        ], 'تم جلب تفاصيل الطلب بنجاح');
+    }
+
 }

@@ -51,5 +51,10 @@ class Order extends Model
         return $this->hasMany(OrderProduct::class);
     }
 
+    public function orderDays()
+    {
+        return $this->hasMany(OrderDay::class);
+    }
+
 }
 
