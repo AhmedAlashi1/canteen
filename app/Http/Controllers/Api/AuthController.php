@@ -91,6 +91,7 @@ class AuthController extends Controller
         $data['device_token'] = $request->device_token;
         $data['device_type'] = $request->device_type;
         $data['country_code'] = $request->country_code;
+        $data['phone_not_code'] = $request->phone;
         $data['status'] = '2';
 
         $user = User::query()->create($data);
