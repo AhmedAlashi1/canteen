@@ -42,11 +42,15 @@ class Handler extends ExceptionHandler
         }elseif ($exception instanceof MethodNotAllowedHttpException) {
             return response()->view('errors.405', [], 405);
         }elseif ($exception instanceof NotFoundHttpException) {
-            if (!($request->is('ar/admin*') || $request->is('en/admin*'))) {
-                return response()->view('frontEnd.error', [], 404);
+
+                if (
+                    !($request->is('ar/admin*') || $request->is('en/admin*')) &&
+                    !$request->is('telescope*')
+
+                ) {
+                    return response()->view('frontEnd.error', [], 404);
+                }
             }
-//            return response()->view('fronted.error', [], 404);
-        }
 
         return parent::render($request, $exception);
     }
