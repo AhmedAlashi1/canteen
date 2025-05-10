@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CanteenController;
+use App\Http\Controllers\Api\PaymentWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -79,8 +81,13 @@ Route::middleware('auth:sanctum')->group(function () {
     //child
     Route::apiResource('child', ChildController::class);
 //        "spatie/laravel-sitemap": "^6.2",
+
     //order
-    Route::post('order', [OrderController::class, 'store']);
+    Route::post('order', [OrderController::class, 'store']);// create order
+    Route::post('order/apply-coupon', [OrderController::class, 'applyCoupon']);
 
 
 });
+Route::get('callback/success', [OrderController::class, 'paymentSuccess'])->name('ordersSuccess');
+Route::get('callback/error', [OrderController::class, 'paymentError'])->name('ordersError');
+//Route::post('myfatoorah/webhook', [PaymentWebhookController::class, 'handle']);

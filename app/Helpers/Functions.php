@@ -70,4 +70,6 @@ trait Functions
         $this->whatsapp($phone, $msg);
     }
 
+    
+
 }

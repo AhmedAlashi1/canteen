@@ -16,4 +16,13 @@ class PaymentMethod extends Model
         'slug',
         'status',
     ];
+
+    const ALL_METHODS = [
+        'knet' => 1,
+        'apple-pay' => 6,
+        'Google Pay' => 32,
+        'Visa' => 2,
+        'Stc Pay' => 14,
+        'Benefit' => 5,
+    ];
 }

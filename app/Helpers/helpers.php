@@ -1,8 +1,9 @@
 <?php
 
 
+use Carbon\Carbon;
 
- function sendResponse($result, $message = null)
+function sendResponse($result, $message = null)
 {
 
     $response = [
@@ -121,4 +122,16 @@ function months($days)
     }
 
     return $result;
+}
+
+function isAllowedCanteenDay(): bool
+{
+    $dayOfWeek = now()->dayOfWeek;
+    return in_array($dayOfWeek, [
+        Carbon::SUNDAY,    // 0
+        Carbon::MONDAY,    // 1
+        Carbon::TUESDAY,   // 2
+        Carbon::WEDNESDAY, // 3
+        Carbon::THURSDAY   // 4
+    ]);
 }
