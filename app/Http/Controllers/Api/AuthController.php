@@ -106,8 +106,7 @@ class AuthController extends Controller
 //                'type' => $request->device_type
 //            ]);
 //        }
-
-        return sendResponse($success);
+        return sendResponse(new UserResource($user));
     }
 
     public function activateAccount(Request $request)
