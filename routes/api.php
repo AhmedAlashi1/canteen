@@ -83,9 +83,11 @@ Route::middleware('auth:sanctum')->group(function () {
 //        "spatie/laravel-sitemap": "^6.2",
 
     //order
-    Route::post('order/store', [OrderController::class, 'store']);
+    Route::post('order/store-school', [OrderController::class, 'storeSchool']);
+    Route::post('order/store-store', [OrderController::class, 'storeStore']);
     Route::post('order/apply-coupon', [OrderController::class, 'applyCoupon']);
-    Route::get('orders', [OrderController::class, 'getUserOrders']);
+    Route::get('orders/store', [OrderController::class, 'getStoreOrders']);
+    Route::get('orders/school', [OrderController::class, 'getSchoolOrders']);
     Route::get('order/{id}', [OrderController::class, 'showDetails']);
 
     //canteen
@@ -93,7 +95,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('details/{child_id}', [CanteenController::class, 'canteenHome']);
         Route::get('products/{child_id}', [CanteenController::class, 'products']);
         Route::get('basket-details/{child_id}', [CanteenController::class, 'basketDetails']);
-
     });
 
 });

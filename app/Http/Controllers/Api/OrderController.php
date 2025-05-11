@@ -9,7 +9,9 @@ use App\Models\Order;
 use App\Models\OrderDay;
 use App\Models\OrderProduct;
 use App\Models\PaymentMethod;
+use App\Models\ProductSize;
 use App\Models\SchoolProduct;
+use App\Models\Setting;
 use App\Services\MyFatoorahService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -20,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 class OrderController extends Controller
 {
 
-    public function store(Request $request)
+    public function storeSchool(Request $request)
     {
         // [1] التحقق من صحة البيانات لإنشاء الطلب
         $orderValidator = Validator::make($request->all(), [
@@ -225,6 +227,193 @@ class OrderController extends Controller
         ]);
     }
 
+    public function storeStore(Request $request)
+    {
+        // [1] التحقق من البيانات
+        $validator = Validator::make($request->all(), [
+            'child_id' => 'required|exists:children,id',
+            'address_id' => 'required|exists:addresses,id',
+            'payment_id' => 'required|exists:payment_methods,id',
+            'coupon' => 'nullable|string',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.product_size_id' => 'required|exists:product_sizes,id',
+            'items.*.quantity' => 'required|integer|min:1',
+        ], [
+            'items.*.product_id.required' => 'الرجاء تحديد المنتج.',
+            'items.*.product_size_id.required' => 'الرجاء تحديد الحجم.',
+            'items.*.quantity.required' => 'الرجاء تحديد الكمية.',
+        ]);
+
+        if ($validator->fails()) {
+            return sendError($validator->errors()->first());
+        }
+
+        // [2] تحميل الطفل والمستخدم
+        $child = Child::with('user')->find($request->child_id);
+        $user = $child->user;
+
+        // [3] التحقق من كل منتج وحجم وتجهيز البيانات
+        $total = 0;
+        $orderProducts = [];
+
+        foreach ($request->items as $item) {
+            $productSize = ProductSize::where('id', $item['product_size_id'])
+                ->where('product_id', $item['product_id'])
+                ->first();
+
+            if (!$productSize) {
+                return sendError('الحجم المحدد لا يتبع المنتج.');
+            }
+
+            if ($item['quantity'] > $productSize->quantity) {
+                return sendError('الكمية المطلوبة غير متوفرة للحجم: ' . $productSize->size);
+            }
+
+            $lineTotal = $productSize->price * $item['quantity'];
+            $total += $lineTotal;
+
+            $orderProducts[] = [
+                'product_id' => $item['product_id'],
+                'product_size_id' => $item['product_size_id'],
+                'quantity' => $item['quantity'],
+                'type' => 'store',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        // [4] استرجاع قيمة الشحن من الإعدادات
+        $shippingFee = (float) Setting::where('key_id', 'delivery_fees')->value('value') ?? 0;
+
+        // [5] حساب الخصم إن وجد
+        $coupon = null;
+        $discount = 0;
+        $couponCode = $request->coupon;
+
+        if ($couponCode) {
+            $coupon = Coupon::where('code', $couponCode)
+                ->where('status', true)
+                ->whereDate('end_at', '>=', now())
+                ->first();
+
+            if (!$coupon) {
+                return sendError('الكوبون غير صالح أو منتهي.');
+            }
+
+            $usedCount = Order::where('coupon_id', $coupon->id)
+                ->where('child_id', $child->id)
+                ->count();
+
+            if ($coupon->code_limit !== null && $usedCount >= $coupon->code_limit) {
+                return sendError('تم استخدام الكوبون بالحد الأقصى.');
+            }
+
+            $discount = $coupon->type === 'percentage'
+                ? $total * ($coupon->value / 100)
+                : $coupon->value;
+
+            $discount = min($discount, $total);
+        }
+
+        // [6] حساب الإجمالي النهائي
+        $finalTotal = round($total - $discount + $shippingFee, 3);
+
+        // [7] إنشاء الطلب
+        $order = Order::create([
+            'child_id' => $child->id,
+            'user_id' => $user->id,
+            'address_id' => $request->address_id,
+            'type' => 'store',
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'total' => $finalTotal,
+            'discount' => round($discount, 3),
+            'coupon_id' => $coupon?->id,
+            'payment_id' => $request->payment_id,
+            'shipping_fees' => $shippingFee,
+        ]);
+
+        // [8] إضافة المنتجات
+        foreach ($orderProducts as &$op) {
+            $op['order_id'] = $order->id;
+        }
+
+        OrderProduct::insert($orderProducts);
+
+        if ($finalTotal <= 0) {
+            // إكمال الطلب مباشرة
+            DB::transaction(function () use ($order) {
+                $order->update([
+                    'status' => 'completed',
+                    'payment_status' => 'paid',
+                ]);
+
+                // خصم الكميات من الأحجام
+                foreach ($order->orderProducts as $op) {
+                    if ($size = $op->size) {
+                        $size->decrement('quantity', $op->quantity);
+                    }
+                }
+            });
+
+            return sendResponse([
+                'success' => true,
+                'message' => 'تم إنشاء الطلب بنجاح (طلب مجاني).',
+                'payment_url' => null,
+                'order_id' => $order->id,
+                'total' => round($total, 3),
+                'discount' => round($discount, 3),
+                'final_total' => round($finalTotal, 3),
+                'free_order' => true,
+            ]);
+        }
+
+        // [إنشاء رابط الدفع]
+        $phone = preg_replace('/[^0-9]/', '', $user->phone);
+        $phone = substr($phone, -11);
+
+        $paymentMethod = PaymentMethod::find($request->payment_id);
+        $paymentMethodId = PaymentMethod::ALL_METHODS[$paymentMethod->slug] ?? 1;
+
+        $invoiceData = [
+            'InvoiceValue' => round($finalTotal, 3),
+            'PaymentMethodId' => $paymentMethodId,
+            'CustomerName' => $user->name,
+            'CustomerEmail' => $user->email,
+            'CustomerMobile' => $phone,
+            'CallBackUrl' => route('ordersSuccess', ['order_id' => $order->id]),
+            'ErrorUrl' => route('ordersError', ['order_id' => $order->id]),
+            'CustomerReference' => $order->id,
+            'Language' => app()->getLocale(),
+            'DisplayCurrencyIso' => 'KWD',
+        ];
+
+        try {
+            $paymentUrl = app(MyFatoorahService::class)->executePayment($invoiceData, $order->id);
+        } catch (\Throwable $e) {
+            $order->delete();
+            Log::error('MyFatoorah Error', [
+                'message' => $e->getMessage(),
+                'order_id' => $order->id,
+                'invoiceData' => $invoiceData,
+            ]);
+            return sendError('فشل إنشاء رابط الدفع. الرجاء المحاولة لاحقاً.');
+        }
+
+        return sendResponse([
+            'success' => true,
+            'message' => 'تم إنشاء الطلب ورابط الدفع بنجاح.',
+            'payment_url' => $paymentUrl,
+            'order_id' => $order->id,
+            'total' => round($total, 3),
+            'discount' => round($discount, 3),
+            'final_total' => round($finalTotal, 3),
+            'free_order' => false,
+        ]);
+
+    }
+
     protected function completeOrderWithoutPayment(Order $order, array $days)
     {
         DB::transaction(function () use ($order, $days) {
@@ -245,23 +434,25 @@ class OrderController extends Controller
 
     public function applyCoupon(Request $request)
     {
-        //  التحقق من صحة البيانات
         $validator = Validator::make($request->all(), [
+            'type' => 'required|in:school,store',
             'child_id' => 'required|exists:children,id',
             'coupon' => 'required|string',
-        ], [
-            'child_id.required' => 'الرجاء تحديد الطفل.',
-            'child_id.exists' => 'الطفل غير موجود في قاعدة البيانات.',
-            'coupon.required' => 'الرجاء إدخال رمز الكوبون.',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.product_size_id' => 'required_if:type,store|exists:product_sizes,id',
         ]);
 
         if ($validator->fails()) {
             return sendError($validator->errors()->first());
         }
 
-        //  التحقق من الكوبون
+        $type = $request->type;
+        $child = Child::find($request->child_id);
+
         $coupon = Coupon::where('code', $request->coupon)
-            ->where('status', 'active')
+            ->where('status', true)
             ->whereDate('end_at', '>=', now())
             ->first();
 
@@ -269,39 +460,52 @@ class OrderController extends Controller
             return sendError('رمز الكوبون غير صالح أو منتهي الصلاحية.');
         }
 
-        //  التحقق من عدد مرات الاستخدام
-        $usageCount = Order::where('coupon_id', $coupon->id)->count();
-        if ($coupon->code_limit !== null && $usageCount >= $coupon->code_limit) {
+        $usedCount = Order::where('coupon_id', $coupon->id)
+            ->where('child_id', $child->id)
+            ->count();
+
+        if ($coupon->code_limit !== null && $usedCount >= $coupon->code_limit) {
             return sendError('تم استخدام هذا الكوبون بالحد الأقصى.');
         }
 
-        //  جلب الطلب المفتوح
-        $order = Order::where('child_id', $request->child_id)
-            ->where('status', 'pending')
-            ->where('type', 'school')
-            ->with(['orderProducts.schoolProduct'])
-            ->first();
-
-        if (!$order || $order->orderProducts->isEmpty()) {
-            return sendError('لا يوجد طلب مفتوح لهذا الطفل.');
-        }
-
-        //  حساب السعر الكلي
+        // حساب السعر الكلي
         $total = 0;
-        foreach ($order->orderProducts as $item) {
-            $price = $item->schoolProduct?->price ?? 0;
-            $total += $price * $item->quantity;
+
+        foreach ($request->items as $item) {
+            if ($type === 'school') {
+                $schoolProduct = SchoolProduct::where('product_id', $item['product_id'])
+                    ->where('school_id', $child->school_id)
+                    ->first();
+
+                if (!$schoolProduct) {
+                    return sendError("المنتج غير متوفر في مدرسة الطفل.");
+                }
+
+                $total += $schoolProduct->price * $item['quantity'];
+            }
+
+            if ($type === 'store') {
+                $productSize = ProductSize::where('id', $item['product_size_id'])
+                    ->where('product_id', $item['product_id'])
+                    ->first();
+
+                if (!$productSize) {
+                    return sendError("الحجم المحدد لا يتبع المنتج.");
+                }
+
+                $total += $productSize->price * $item['quantity'];
+            }
         }
 
-        //  حساب الخصم
+        // حساب الخصم
         $discount = 0;
         if ($coupon->type === 'percentage') {
-            $discount = $total * ($coupon->discount / 100);
+            $discount = $total * ($coupon->value / 100);
         } elseif ($coupon->type === 'fixed') {
-            $discount = $coupon->discount;
+            $discount = $coupon->value;
         }
 
-        $discount = min($discount, $total); // منع الخصم من تجاوز الإجمالي
+        $discount = min($discount, $total);
         $totalAfter = round($total - $discount, 3);
 
         return sendResponse([
@@ -322,15 +526,19 @@ class OrderController extends Controller
         DB::transaction(function () use ($order) {
             // تحديث حالة الطلب
             $order->update([
-                'status' => 'completed',
+                'status' => $order->type === 'store' ? 'pending' : 'completed',
                 'payment_status' => 'paid',
                 'transaction_id' => $request->paymentId ?? null,
             ]);
 
-            // خصم الكمية
+            // خصم الكمية حسب نوع الطلب
             foreach ($order->orderProducts as $orderProduct) {
-                if ($schoolProduct = $orderProduct->schoolProduct) {
+                if ($order->type === 'school' && $schoolProduct = $orderProduct->schoolProduct) {
                     $schoolProduct->decrement('quantity', $orderProduct->quantity);
+                }
+
+                if ($order->type === 'store' && $productSize = $orderProduct->size) {
+                    $productSize->decrement('quantity', $orderProduct->quantity);
                 }
             }
         });
@@ -348,140 +556,226 @@ class OrderController extends Controller
     }
 
 
-    public function getUserOrders(Request $request)
+    public function getSchoolOrders(Request $request)
+{
+    try {
+        $user = $request->user();
+        if (!$user) {
+            return sendError('المستخدم غير مسجل دخول.');
+        }
+
+        $lang = $request->header('lang', 'ar');
+        $nameField = $lang == 'ar' ? 'name_ar' : 'name_en';
+
+        // التحقق من معلمات التقسيم
+        $page = max(1, (int)$request->input('page', 1));
+        $size = min(100, max(1, (int)$request->input('size', 10)));
+
+        $query = Order::with([
+            'child.school',
+            'orderDays',
+            'child' => fn($q) => $q->where('user_id', $user->id)
+        ])
+            ->where('type', 'school')
+            ->where('status', 'completed')
+            ->where('payment_status', 'paid')
+            ->orderBy('created_at', 'desc');
+
+        // الحصول على النتائج مع التقسيم
+        $paginator = $query->paginate(
+            $size,
+            ['*'],
+            'page',
+            $page
+        );
+
+        $orders = collect($paginator->items())->map(function ($order) use ($nameField) {
+            if (!$order->child) return null;
+
+            return [
+                'process_number' => '#' . str_pad($order->id, 7, '0', STR_PAD_LEFT),
+                'child' => [
+                    'name' => $order->child->name,
+                    'level' => $order->child->level,
+                    'student_number' => $order->child->student_number,
+                    'image' => asset($order->child->image),
+                    'school_name' => $order->child->school->{$nameField},
+                ],
+                'details' => [
+                    'days_count' => $order->orderDays->count(),
+                    'total_cost' => number_format($order->total, 3) . ' KWD',
+                    'time_ago' => $order->created_at->diffForHumans()
+                ],
+            ];
+        })->filter();
+
+        // إعداد بيانات التقسيم
+        $paginationData = [
+            'current_page' => $paginator->currentPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+            'last_page' => $paginator->lastPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem()
+        ];
+
+        return sendResponse([
+            'data' => $orders,
+            'pagination' => $paginationData
+        ], 'تم جلب الطلبات بنجاح.');
+
+    } catch (\Exception $e) {
+        Log::error('Orders API Error: '.$e->getMessage());
+        return sendError('حدث خطأ غير متوقع.', [], 500);
+    }
+}
+
+    // جلب الطلبات من نوع "store" الخاصة بالمستخدم الحالي (مع التصفية حسب الحالة: current أو completed)
+    public function getStoreOrders(Request $request)
     {
         try {
+            // الحصول على المستخدم الحالي من التوكن
             $user = $request->user();
-            if (!$user) {
-                return sendError('المستخدم غير مسجل دخول.');
+            if (!$user) return sendError('المستخدم غير مسجل دخول.');
+
+            // إعداد معلمات التقسيم والفلترة
+            $page = max(1, (int) $request->input('page', 1));
+            $size = min(100, max(1, (int) $request->input('size', 10)));
+            $tab = $request->input('tab', 'current'); // current أو completed
+
+            // تجهيز الاستعلام على الطلبات من نوع store
+            $query = Order::with('orderProducts', 'child')
+                ->where('type', 'store')
+                ->whereHas('child', fn($q) => $q->where('user_id', $user->id));
+
+            // تصفية حسب التبويب
+            if ($tab === 'completed') {
+                $query->where('status', 'delivered');
+            } else {
+                $query->where('status', '!=', 'delivered');
             }
 
-            $lang = $request->header('lang', 'ar');
-            $nameField = $lang == 'ar' ? 'name_ar' : 'name_en';
-
-            // التحقق من معلمات التقسيم
-            $page = max(1, (int)$request->input('page', 1));
-            $size = min(100, max(1, (int)$request->input('size', 10)));
-
-            $query = Order::with([
-                'child.school',
-                'orderDays',
-                'child' => fn($q) => $q->where('user_id', $user->id)
-            ])
-                ->where('type', 'school')
-                ->where('status', 'completed')
-                ->where('payment_status', 'paid')
+            // شرط الدفع المؤكد
+            $query->where('payment_status', 'paid')
                 ->orderBy('created_at', 'desc');
 
-            // الحصول على النتائج مع التقسيم
-            $paginator = $query->paginate(
-                $size,
-                ['*'],
-                'page',
-                $page
-            );
+            // تنفيذ الاستعلام مع التقسيم
+            $paginator = $query->paginate($size, ['*'], 'page', $page);
 
-            $orders = collect($paginator->items())->map(function ($order) use ($nameField) {
-                if (!$order->child) return null;
-
+            // تنسيق الطلبات للعرض
+            $orders = collect($paginator->items())->map(function ($order) {
                 return [
-                    'process_number' => '#' . str_pad($order->id, 7, '0', STR_PAD_LEFT),
-                    'child' => [
-                        'name' => $order->child->name,
-                        'level' => $order->child->level,
-                        'student_number' => $order->child->student_number,
-                        'image' => asset($order->child->image),
-                        'school_name' => $order->child->school->{$nameField},
-                    ],
-                    'details' => [
-                        'days_count' => $order->orderDays->count(),
-                        'total_cost' => number_format($order->total, 3) . ' KWD',
-                        'time_ago' => $order->created_at->diffForHumans()
-                    ],
+                    'order_id' => $order->id,
+                    'process_number' => '#' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
+                    'status' => ucfirst($order->status),
+                    'product_count' => $order->orderProducts->sum('quantity'),
+                    'total_cost' => number_format($order->total, 3) . ' KD',
+                    'time_ago' => $order->created_at->diffForHumans(),
                 ];
-            })->filter();
+            });
 
-            // إعداد بيانات التقسيم
-            $paginationData = [
-                'current_page' => $paginator->currentPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-                'last_page' => $paginator->lastPage(),
-                'from' => $paginator->firstItem(),
-                'to' => $paginator->lastItem()
-            ];
-
+            // إرجاع الطلبات مع معلومات التقسيم
             return sendResponse([
                 'data' => $orders,
-                'pagination' => $paginationData
-            ], 'تم جلب الطلبات بنجاح.');
+                'pagination' => [
+                    'current_page' => $paginator->currentPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                    'last_page' => $paginator->lastPage(),
+                    'from' => $paginator->firstItem(),
+                    'to' => $paginator->lastItem(),
+                ]
+            ], 'تم جلب طلبات المتجر بنجاح.');
 
         } catch (\Exception $e) {
-            Log::error('Orders API Error: '.$e->getMessage());
+            Log::error('Store Orders Error: ' . $e->getMessage());
             return sendError('حدث خطأ غير متوقع.', [], 500);
         }
     }
 
+
+    // جلب تفاصيل طلب واحد سواء من نوع school أو store
     public function showDetails(Request $request, $id)
     {
         $lang = strtolower($request->header('lang', 'en'));
 
+        // تحميل الطلب مع العلاقات اللازمة
         $order = Order::with([
             'child.user',
             'child.school',
             'orderProducts.product',
+            'orderProducts.size',
             'orderDays',
-            'payment'
+            'payment',
+            'address'
         ])->find($id);
 
-        if (!$order) {
-            return sendError('الطلب غير موجود.');
-        }
+        if (!$order) return sendError('الطلب غير موجود.');
 
         $child = $order->child;
         $user = $child->user;
         $school = $child->school;
+        $isSchool = $order->type === 'school';
 
-        $products = $order->orderProducts->map(function ($item) use ($lang) {
+        // تجهيز المنتجات
+        $products = $order->orderProducts->map(function ($item) use ($lang, $isSchool) {
             $product = $item->product;
+            $size = $item->size?->size;
+
+            // تحديد السعر حسب النوع
+            $price = $isSchool
+                ? round($product->price, 3)
+                : round($item->size?->price ?? 0, 3);
+
             return [
                 'name'     => $lang === 'ar' ? $product->name_ar : $product->name_en,
-                'price'    => round($product->price, 3),
+                'size'     => $isSchool ? null : $size,
+                'price'    => $price,
                 'image'    => url($product->image),
                 'quantity' => $item->quantity,
             ];
         });
 
-        $days = $order->orderDays->map(function ($day) {
-            return \Carbon\Carbon::parse($day->date)->translatedFormat('l - d/m/Y');
-        });
-
         $paymentMethod = $order->payment;
 
-        return sendResponse([
+        // هيكل الرد الأساسي
+        $base = [
             'order_id' => $order->id,
-            'process_number' => '#' . str_pad($order->id, 7, '0', STR_PAD_LEFT),
+            'process_number' => '#' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
             'created_at' => $order->created_at->diffForHumans(),
-
-            'child' => [
-                'name'   => $child->name,
-                'grade'  => $child->level,
-                'school' => $school?->{"name_{$lang}"},
-                'image'  => url($child->image),
-            ],
-
+            'status' => $order->status,
             'products' => $products,
-            'applied_days' => $days,
             'payment_method' => [
                 'name' => $paymentMethod?->{"name_{$lang}"},
                 'image' => $paymentMethod ? url($paymentMethod->image) : null
             ],
             'price_summary' => [
                 'product_total' => round($order->total + $order->discount, 3),
+                'shipping_fees' => $order->shipping_fees ?? 0,
                 'discount' => round($order->discount, 3),
                 'final_total' => round($order->total, 3),
             ]
-        ], 'تم جلب تفاصيل الطلب بنجاح');
+        ];
+
+        // إضافة بيانات المدرسة إذا الطلب نوعه school
+        if ($isSchool) {
+            $base['child'] = [
+                'name'   => $child->name,
+                'grade'  => $child->level,
+                'school' => $school?->{"name_{$lang}"},
+                'image'  => url($child->image),
+            ];
+            $base['applied_days'] = $order->orderDays->map(fn($day) =>
+            \Carbon\Carbon::parse($day->date)->translatedFormat('l - d/m/Y')
+            );
+        } else {
+            // إذا الطلب من المتجر → إظهار العنوان
+            $base['address'] = $order->address ? $order->address->location : null;
+        }
+
+        return sendResponse($base, 'تم جلب تفاصيل الطلب بنجاح.');
     }
+
+
 
 }
