@@ -110,5 +110,24 @@ class SchoolController extends Controller
         $regions = Region::where('city_id', $request->city_id)->select('id', 'name_ar')->get();
         return response()->json($regions);
     }
+    //select
+    public function select(Request $request)
+    {
+        $q = $request->get('q');
+        $schools = School::where('name_ar', 'like', '%' . $q . '%')
+            ->orWhere('name_en', 'like', '%' . $q . '%')
+            ->select('id', 'name_ar', 'name_en')
+            ->limit(20)
+            ->get();
+        //map name_ar = name
+        $schools = $schools->map(function ($school) {
+            return [
+                'id' => $school->id,
+                'name' => $school->name_ar ,
+            ];
+        });
+
+        return response()->json($schools);
+    }
 
 }

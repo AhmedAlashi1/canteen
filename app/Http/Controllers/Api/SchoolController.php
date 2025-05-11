@@ -15,19 +15,9 @@ class SchoolController extends Controller
 
         $schools = School::where('status', 1)->with('city','region')
             ->orderBy('id', 'desc')
-            ->paginate(20);
+            ->get();
 
-        return sendResponse([
-            'data' => SchoolResource::collection($schools),
-            'pagination' => [
-                'current_page' => $schools->currentPage(),
-                'last_page' => $schools->lastPage(),
-                'per_page' => $schools->perPage(),
-                'total' => $schools->total(),
-                'next_page_url' => $schools->nextPageUrl(),
-                'prev_page_url' => $schools->previousPageUrl(),
-            ]
-        ]);
+        return sendResponse(SchoolResource::collection($schools));
 
     }
     //show

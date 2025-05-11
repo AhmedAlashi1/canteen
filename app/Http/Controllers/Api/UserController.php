@@ -38,6 +38,8 @@ class UserController extends Controller
             $data['image'] = $image_path;
         }
         $data['phone'] = $phone;
+        $data['country_code'] = $request->country_code;
+        $data['phone_not_code'] = $request->phone;
 //        return $data;
         $user->update(array_filter($data));
 

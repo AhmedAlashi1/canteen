@@ -21,7 +21,7 @@ function sendResponse($result, $message = null)
     return response()->json($response, 200);
 }
 
- function sendError($error = 'error', $errorMessages = [], $code = 200 , )
+ function sendError($error = 'error', $errorMessages = [], $code = 400 , )
 {
     $response = [
         'status' => false,

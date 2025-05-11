@@ -18,6 +18,7 @@ class AuthController extends Controller
 //            'country_code' => 'required_with:phone|string|size:2',
 //            'phone' => 'required|max:191|phone:country_code',
             'phone' => 'required|max:191',
+            'country_code' => 'required|max:191',
         ]);
 
         if ($validator->fails()) {
@@ -35,8 +36,9 @@ class AuthController extends Controller
             return sendError($errMsg);
         }
 
-        $token = $user->createToken('authToken')->plainTextToken;
-        $activation_code = rand(1111, 9999);
+//        $token = $user->createToken('authToken')->plainTextToken;
+//        $activation_code = rand(1111, 9999);
+        $activation_code = 1234;
         if ($phone === '+96555558718') {
             $activation_code = 1234;
         }
@@ -59,7 +61,7 @@ class AuthController extends Controller
 
         $data = [
             'user' => new UserResource($user),
-            'token' => $token
+//            'token' => $token
         ];
 
 
@@ -88,10 +90,12 @@ class AuthController extends Controller
         $data['phone'] = $phone;
         $data['device_token'] = $request->device_token;
         $data['device_type'] = $request->device_type;
+        $data['country_code'] = $request->country_code;
+        $data['phone_not_code'] = $request->phone;
         $data['status'] = '2';
 
         $user = User::query()->create($data);
-        $success['token'] = $user->createToken('MyAuthApp')->plainTextToken;
+//        $success['token'] = $user->createToken('MyAuthApp')->plainTextToken;
         $success['name'] = $user->name;
 
 //        $this->sendVerificationCode($user->phone, $user->activation_code);
@@ -102,14 +106,22 @@ class AuthController extends Controller
 //                'type' => $request->device_type
 //            ]);
 //        }
-
-        return sendResponse($success);
+        return sendResponse(new UserResource($user));
     }
 
     public function activateAccount(Request $request)
     {
-        $user = auth()->user();
-
+//        $user = auth()->user();
+        $validator = Validator::make($request->all(), [
+            'activation_code' => 'required|numeric|digits:4',
+            'phone' => 'required|max:191',
+            'country_code' => 'required|max:191',
+        ]);
+        $phone = $request->country_code . $request->phone;
+            $user = User::where('phone',$phone)->first();
+        if (!$user){
+            return sendError('user not found');
+        }
         if (empty($request->input('activation_code'))) {
             return sendError('activation_code_missing');
         }
@@ -144,10 +156,12 @@ class AuthController extends Controller
 
         try {
             if ($user->save()) {
+                $token = $user->createToken('authToken')->plainTextToken;
                 $userdata = [
                     'user_id' => $user->id,
                     'phone' => $user->phone,
                     'name' => $user->name,
+                    'token' => $token
                 ];
                 return sendResponse($userdata);
             } else {

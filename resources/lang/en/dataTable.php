@@ -56,6 +56,10 @@ return [
     'slug'=> 'Slug',
     'company_name' => 'Company Name',
     'whatsapp' => 'Whatsapp',
+    'discount' => 'Discount',
+    'use_number' => 'Use Number',
+    'code_limit' => 'Code Limit',
+    'end_at' => 'End At',
 
 
 ];
