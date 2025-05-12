@@ -78,8 +78,9 @@ class OrderController extends Controller
         $total = 0;
         $orderProducts = [];
 
+        $daysCount = count($days);
+
         foreach ($request->items as $item) {
-            // التحقق من توفر المنتج في مدرسة الطفل
             $schoolProduct = SchoolProduct::where('product_id', $item['product_id'])
                 ->where('school_id', $child->school_id)
                 ->with('product')
@@ -95,7 +96,8 @@ class OrderController extends Controller
                 return sendError('الكمية المطلوبة غير متوفرة للمنتج: ' . $schoolProduct->product->name_ar);
             }
 
-            $lineTotal = $schoolProduct->price * $item['quantity'];
+            //  السعر × الكمية × عدد الأيام
+            $lineTotal = $schoolProduct->price * $item['quantity'] * $daysCount;
             $total += $lineTotal;
 
             $orderProducts[] = [
@@ -345,7 +347,7 @@ class OrderController extends Controller
             // إكمال الطلب مباشرة
             DB::transaction(function () use ($order) {
                 $order->update([
-                    'status' => 'completed',
+                    'status' => 'pending', // جاري الانتظار
                     'payment_status' => 'paid',
                 ]);
 
@@ -442,6 +444,8 @@ class OrderController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.product_size_id' => 'required_if:type,store|exists:product_sizes,id',
+            'days' => 'required_if:type,school|array|min:1',
+            'days.*' => 'required_if:type,school|date_format:Y-m-d',
         ]);
 
         if ($validator->fails()) {
@@ -470,6 +474,7 @@ class OrderController extends Controller
 
         // حساب السعر الكلي
         $total = 0;
+        $daysCount = $type === 'school' ? count($request->days) : 1;
 
         foreach ($request->items as $item) {
             if ($type === 'school') {
@@ -481,7 +486,7 @@ class OrderController extends Controller
                     return sendError("المنتج غير متوفر في مدرسة الطفل.");
                 }
 
-                $total += $schoolProduct->price * $item['quantity'];
+                $total += $schoolProduct->price * $item['quantity'] * $daysCount;
             }
 
             if ($type === 'store') {
@@ -522,7 +527,6 @@ class OrderController extends Controller
         if (!$order) return 'الطلب غير موجود.';
 
 
-
         DB::transaction(function () use ($order) {
             // تحديث حالة الطلب
             $order->update([
@@ -548,9 +552,16 @@ class OrderController extends Controller
 
     public function paymentError(Request $request)
     {
-        $orderId = $request->order_id;
+        $order = Order::find($request->order_id);
+        if (!$order) return 'الطلب غير موجود.';
 
-        info("فشل عملية الدفع للطلب: $orderId", $request->all());
+        $order->update([
+//            'status' => 'canceled',
+            'payment_status' => 'canceled',
+            'transaction_id' => $request->paymentId ?? null,
+        ]);
+
+        info("فشل عملية الدفع للطلب: $request->order_id", $request->all());
 
         echo 'error';
     }
