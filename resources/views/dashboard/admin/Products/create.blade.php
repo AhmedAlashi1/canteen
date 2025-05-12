@@ -78,7 +78,7 @@
                                         <label for="status">{{ __('general.status') }}</label>
                                         <select name="status" id="status" class="form-control form-control-sm @error('status') is-invalid @enderror">
                                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>{{ __('general.active') }}</option>
-                                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>{{ __('general.inactive') }}</option>
+                                            <option value="inactive" {{ old('status') != 'active' ? 'selected' : '' }}>{{ __('general.inactive') }}</option>
                                         </select>
                                         @error('status')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
@@ -89,7 +89,7 @@
                                 <div class="col-md-6 col-12">
                                     <div class="form-group">
                                         <label for="schools">{{ __('general.schools') }}</label>
-                                        <select name="schools" id="schools" class="form-control select2-ajax" ></select>
+                                        <select name="schools" id="school_id" class="form-control select2-ajax" ></select>
                                         @error('schools')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                 </div>
@@ -98,7 +98,7 @@
                                 <div class="col-md-6 col-12">
                                     <div class="form-group">
                                         <label for="suppliers">{{ __('general.suppliers') }}</label>
-                                        <select name="suppliers" id="suppliers" class="form-control select2-ajax" ></select>
+                                        <select name="suppliers" id="supplier_id" class="form-control select2-ajax" ></select>
                                         @error('suppliers')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                 </div>
@@ -157,14 +157,16 @@
 
                                 <!-- Sizes Section -->
                                 <div class="col-12">
-                                    <div class="col-12">
-                                    <button type="button" class="btn btn-sm btn-primary mt-1" id="add-size">{{ __('general.add_size') }}</button>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-sm btn-primary mt-1" id="add-size">{{ __('general.add_size') }}</button>
+                                        </div>
                                     </div>
-                                    <label>{{ __('general.sizes') }}</label>
+                                    <br>
 
                                     <div id="sizes-wrapper">
                                         <!-- أول صف -->
-                                        <div class="row size-row mb-1">
+                                        <div class="row size-row mb-1" style="display: none;">
                                             <div class="col-md-3">
                                                 <input type="text" name="sizes[0][name]" class="form-control form-control-sm" placeholder="{{ __('general.size') }}">
                                             </div>
@@ -233,7 +235,7 @@
 
     <script>
         $(document).ready(function () {
-            let sizeIndex = 1;
+            let sizeIndex = 0;
 
             $('#add-size').click(function () {
                 $('#sizes-wrapper').append(`

@@ -7,7 +7,10 @@ use App\Http\Controllers\Admin\AdsController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\RegionController;
 use App\Http\Controllers\Admin\ContactUsController;
+use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\ChildrenController;
+use App\Http\Controllers\Admin\OrdersController;
 use App\Http\Controllers\Admin\CouponsController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -30,9 +33,30 @@ Route::prefix(LaravelLocalization::setLocale() . '/admin')->middleware(['web'])
             Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
             Route::resource('admins', AdminController::class);
+            //users
+            Route::get('users', [UsersController::class, 'index'])->name('users.index');
+            Route::get('users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+            Route::put('users/{id}', [UsersController::class, 'update'])->name('users.update');
+            Route::delete('users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
+
+            //children
+            Route::get('children', [ChildrenController::class, 'index'])->name('children.index');
+            Route::get('children/{id}/edit', [ChildrenController::class, 'edit'])->name('children.edit');
+            Route::put('children/{id}', [ChildrenController::class, 'update'])->name('children.update');
+            Route::delete('children/{id}', [ChildrenController::class, 'destroy'])->name('children.destroy');
+
+            //orders
+            Route::get('orders', [OrdersController::class, 'index'])->name('orders.index');
+            //show order
+            Route::get('orders/{id}', [OrdersController::class, 'show'])->name('orders.show');
+
+
+
+            //schools
             Route::resource('schools', SchoolController::class);
             Route::get('/get-regions', [SchoolController::class, 'getByCity'])->name('get.regions');
 
+            //cities
             Route::resource('cities', CityController::class);
 
             //regions

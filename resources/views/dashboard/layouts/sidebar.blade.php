@@ -2,10 +2,8 @@
   <div class="app-brand demo">
     <a href="#" class="app-brand-link">
 
-        <img src="{{ asset('dashboard/icon/Group.svg') }}" height="45" alt="Logo" class="mr-1">
-
-
-        {{--      <span class="app-brand-text demo  menu-text fw-bold">Effect</span>--}}
+        <img src="{{ asset('logo.png') }}" height="45" alt="Logo" class="mr-1">
+              <span class="app-brand-text demo  menu-text fw-bold" style="font-size : 18px">SMART CANTEEN</span>
     </a>
 
     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -45,10 +43,23 @@
 
         <!-- General Section -->
         <li class="menu-header">@lang('general.General')</li>
+
         <li class="menu-item {{ Route::is('admin.schools.*') ? 'active' : '' }}">
             <a href="{{ route('admin.schools.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-briefcase"></i>
                 <div>{{__('general.schools')}}</div>
+            </a>
+        </li>
+            <li class="menu-item {{ Route::is('admin.users.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.users.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-users"></i>
+                    <div>{{__('general.Users')}}</div>
+                </a>
+            </li>
+        <li class="menu-item {{ Route::is('admin.children.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.children.index') }}" class="menu-link side-sclaex">
+                <i class="menu-icon tf-icons ti ti-user"></i>
+                <div>{{__('general.Children')}}</div>
             </a>
         </li>
         <li class="menu-item {{ Route::is('admin.suppliers.*') ? 'active' : '' }}">
@@ -56,40 +67,28 @@
                 <i class="menu-icon tf-icons ti ti-user"></i>
                 <div>{{__('general.Suppliers')}}</div>
             </a>
-        <li class="menu-item {{ Route::is('admin.cities.*') ? 'active' : '' }}">
-            <a href="{{ route('admin.cities.index') }}" class="menu-link side-sclaex">
-                <i class="menu-icon tf-icons ti ti-map"></i>
-                <div>{{__('general.Cities')}}</div>
-            </a>
-        </li>
 
-        <li class="menu-item {{ Route::is('admin.contact-us.*') ? 'active' : '' }}">
-            <a href="{{ route('admin.contact-us.index') }}" class="menu-link side-sclaex">
-                <i class="menu-icon tf-icons ti ti-message-2"></i>
-                <div>{{__('general.contactUs')}}</div>
-            </a>
-        </li>
+            <li class="menu-item {{ Route::is('admin.orders.*') ? 'open active' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-shopping-cart"></i>
+                    <div>{{ __('general.Orders') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request('type') == 'school' ? 'active' : '' }}">
+                        <a href="{{ route('admin.orders.index', ['type' => 'school']) }}" class="menu-link">
+                            <div>{{ __('general.Orders School') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ request('type') == 'store' ? 'active' : '' }}">
+                        <a href="{{ route('admin.orders.index', ['type' => 'store']) }}" class="menu-link">
+                            <div>{{ __('general.Orders Store') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
 
-        <li class="menu-item {{ Route::is('admin.ads.*') ? 'active' : '' }}">
-            <a href="{{ route('admin.ads.index') }}" class="menu-link side-sclaex">
-                <i class="menu-icon tf-icons ti ti-ad"></i>
-                <div>{{__('general.Ads')}}</div>
-            </a>
-        </li>
-        <li class="menu-item {{ Route::is('admin.payment-methods.*') ? 'active' : '' }}">
-            <a href="{{ route('admin.payment-methods.index') }}" class="menu-link side-sclaex">
-                <i class="menu-icon tf-icons ti ti-credit-card"></i>
-                <div>{{__('general.Payment Methods')}}</div>
-            </a>
-        </li>
-        <li class="menu-item {{ Route::is('admin.coupons.*') ? 'active' : '' }}">
-            <a href="{{ route('admin.coupons.index') }}" class="menu-link side-sclaex">
-                <i class="menu-icon tf-icons ti ti-tag"></i>
-                <div>{{__('general.Coupons')}}</div>
-            </a>
-        </li>
 
-        <li class="menu-item {{ Route::is('admin.categories.*') ? 'active' : '' }}">
+            <li class="menu-item {{ Route::is('admin.categories.*') ? 'active' : '' }}">
             <a href="{{ route('admin.categories.index') }}" class="menu-link side-sclaex">
                 <i class="menu-icon tf-icons ti ti-category"></i>
                 <div>{{__('general.Categories')}}</div>
@@ -101,8 +100,37 @@
                 <div>{{__('general.Products')}}</div>
             </a>
         </li>
+            <li class="menu-item {{ Route::is('admin.ads.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.ads.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-ad"></i>
+                    <div>{{__('general.Ads')}}</div>
+                </a>
+            </li>
+            <li class="menu-item {{ Route::is('admin.cities.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.cities.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-map"></i>
+                    <div>{{__('general.Cities')}}</div>
+                </a>
+            </li>
+            <li class="menu-item {{ Route::is('admin.payment-methods.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.payment-methods.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-credit-card"></i>
+                    <div>{{__('general.Payment Methods')}}</div>
+                </a>
+            </li>
 
-
+            <li class="menu-item {{ Route::is('admin.coupons.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.coupons.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-tag"></i>
+                    <div>{{__('general.Coupons')}}</div>
+                </a>
+            </li>
+            <li class="menu-item {{ Route::is('admin.contact-us.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.contact-us.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-message-2"></i>
+                    <div>{{__('general.contactUs')}}</div>
+                </a>
+            </li>
 
         <!-- Settings Section -->
         <li class="menu-header">@lang('general.Settings')</li>

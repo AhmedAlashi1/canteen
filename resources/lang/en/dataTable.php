@@ -60,6 +60,19 @@ return [
     'use_number' => 'Use Number',
     'code_limit' => 'Code Limit',
     'end_at' => 'End At',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'pending' => 'pending',
+    'children_count' => 'children',
+    'orders_count' => 'orders',
+    'student_number' => 'Student Number',
+    'level' => 'Level',
+    'father' => 'father',
+    'school' =>'school',
+    'child' => 'Child',
+    'payment_status' => 'Payment Status',
+    'total' => 'Total',
+
 
 
 ];

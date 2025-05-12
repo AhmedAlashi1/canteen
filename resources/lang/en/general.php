@@ -196,7 +196,18 @@ return[
     'sizes' => 'Sizes',
     'size' => 'Size',
     'add_size' => 'Add Size',
-    'remove' => 'Remove'
+    'remove' => 'Remove',
+    'cancel' => 'Cancel',
+    'Edit Product' => 'Edit Product',
+    'Users' => 'Users',
+    'Pending' => 'Pending',
+    'Update User'=>'Update User',
+    'Children' => 'Children',
+    'Update Child'=>'Update Child',
+    'Orders' => 'Orders',
+    'Orders School' => 'Orders School',
+    'Orders Store' => 'Orders Store',
+
 
 
 
