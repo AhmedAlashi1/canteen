@@ -13,6 +13,8 @@ class SettingSeeder extends Seeder
      */
     public function run(): void
     {
+        Setting::truncate();
+
         Setting::create([
             'key_id' => 'instagram',
             'title_en'=>'instagram url',
@@ -121,6 +123,15 @@ class SettingSeeder extends Seeder
             'is_object' => '1',
         ]);
 
+// Delivery fees
+        Setting::create([
+            'key_id' => 'delivery_fees',
+            'title_en' => 'Delivery Fees',
+            'title_ar' => 'سعر التوصيل',
+            'value' => '0.300',
+            'set_group' => 'store',
+            'is_object' => 0,
+        ]);
 
 
 

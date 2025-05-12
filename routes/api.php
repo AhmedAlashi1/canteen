@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CanteenController;
+use App\Http\Controllers\Api\PaymentWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -79,8 +81,23 @@ Route::middleware('auth:sanctum')->group(function () {
     //child
     Route::apiResource('child', ChildController::class);
 //        "spatie/laravel-sitemap": "^6.2",
-    //order
-    Route::post('order', [OrderController::class, 'store']);
 
+    //order
+    Route::post('order/store-school', [OrderController::class, 'storeSchool']);
+    Route::post('order/store-store', [OrderController::class, 'storeStore']);
+    Route::post('order/apply-coupon', [OrderController::class, 'applyCoupon']);
+    Route::get('orders/store', [OrderController::class, 'getStoreOrders']);
+    Route::get('orders/school', [OrderController::class, 'getSchoolOrders']);
+    Route::get('order/{id}', [OrderController::class, 'showDetails']);
+
+    //canteen
+    Route::prefix('canteen')->group(function () {
+        Route::get('details/{child_id}', [CanteenController::class, 'canteenHome']);
+        Route::get('products/{child_id}', [CanteenController::class, 'products']);
+        Route::get('basket-details/{child_id}', [CanteenController::class, 'basketDetails']);
+    });
 
 });
+Route::get('callback/success', [OrderController::class, 'paymentSuccess'])->name('ordersSuccess');
+Route::get('callback/error', [OrderController::class, 'paymentError'])->name('ordersError');
+//Route::post('myfatoorah/webhook', [PaymentWebhookController::class, 'handle']);
