@@ -18,6 +18,10 @@ class Address extends Model
         'building_no',
         'user_id',
         'is_default',
+        'title',
+        'lat',
+        'lng',
+
     ];
 
     public function user()
@@ -36,13 +40,16 @@ class Address extends Model
 
     //$rulesApi
     public static $rulesApi = [
-        'location' => 'required|string|max:255',
-        'city_id' => 'required|exists:cities,id',
-        'region_id' => 'required|exists:regions,id',
-        'block' => 'required|string|max:255',
-        'street_name' => 'required|string|max:255',
-        'building_no' => 'required|string|max:255',
-        'is_default' => 'boolean',
+        'location'     => 'required|string|max:255',
+        'city_id'      => 'required|exists:cities,id',
+        'region_id'    => 'required|exists:regions,id',
+        'block'        => 'required|string|max:255',
+        'street_name'  => 'required|string|max:255',
+        'building_no'  => 'required|string|max:255',
+        'is_default'   => 'boolean',
+        'title'        => 'nullable|string|max:255',
+        'lat'          => 'nullable|numeric|between:-90,90',
+        'lng'          => 'nullable|numeric|between:-180,180',
     ];
 
 }
