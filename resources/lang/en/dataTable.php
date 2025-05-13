@@ -82,7 +82,10 @@ return [
     'street_name' => 'Street Name',
     'building_no' => 'Building No',
     'address' => 'Address',
-    'is_default' => 'Is Default',
+    'price' => 'Price',
+    'quantity' => 'Quantity',
+    'product' => 'Product',
+    'supplier' => 'Supplier',
 
 
 

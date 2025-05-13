@@ -2,7 +2,8 @@
 @php
     $user = auth('admin')->check() ? auth('admin')->user() : auth('school')->user();
     $name = auth('admin')->check() ? $user->name : $user->name_en;
-@endphp
+
+ @endphp
 <nav
     class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
     id="layout-navbar">

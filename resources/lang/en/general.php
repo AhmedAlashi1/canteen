@@ -221,6 +221,7 @@ return[
     'Product' => 'Product',
     'Quantity' => 'Quantity',
     'Price' => 'Price',
+    'warehouses' => 'Warehouses',
 
 
 

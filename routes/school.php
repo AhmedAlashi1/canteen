@@ -6,6 +6,8 @@ use App\Http\Controllers\School\AuthController as SchoolAuthController;
 use App\Http\Controllers\School\DashboardController ;
 use App\Http\Controllers\School\UsersController ;
 use App\Http\Controllers\School\ChildrenController ;
+use App\Http\Controllers\School\ProductsController ;
+use App\Http\Controllers\School\SchoolProductsController ;
 
 
 Route::prefix('school')->name('school.')->group(function () {
@@ -23,5 +25,16 @@ Route::prefix('school')->name('school.')->group(function () {
         Route::get('children/{id}/edit', [ChildrenController::class, 'edit'])->name('children.edit');
         Route::put('children/{id}', [ChildrenController::class, 'update'])->name('children.update');
         Route::delete('children/{id}', [ChildrenController::class, 'destroy'])->name('children.destroy');
+
+        Route::resource('products', ProductsController::class);
+
+        //SchoolProduct
+        Route::resource('school-products', SchoolProductsController::class);
+        //products select
+        Route::get('product/select', [ProductsController::class, 'select'])->name('products.select');
+
+
+//        Route::get('school/select', [SchoolController::class, 'select'])->name('schools.select');
+//        Route::get('supplier/select', [SupplierController::class, 'select'])->name('suppliers.select');
     });
 });

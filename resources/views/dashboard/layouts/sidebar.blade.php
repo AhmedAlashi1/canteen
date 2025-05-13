@@ -174,6 +174,22 @@
                 </a>
             </li>
 
+            <li class="menu-item {{ Route::is('school.school-products.*') ? 'active' : '' }}">
+                <a href="{{ route('school.school-products.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-package"></i>
+                    <div>{{__('general.Products')}}</div>
+                </a>
+            </li>
+
+
+            <li class="menu-item {{ Route::is('school.products.*') ? 'active' : '' }}">
+                <a href="{{ route('school.products.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-briefcase"></i>
+{{--                    <i class="menu-icon tf-icons ti ti-package"></i>--}}
+                    <div>{{__('general.warehouses')}}</div>
+                </a>
+            </li>
+
 
         @endif
 
