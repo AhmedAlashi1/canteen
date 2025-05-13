@@ -1,6 +1,7 @@
 <!-- Navbar -->
 @php
     $user = auth('admin')->check() ? auth('admin')->user() : auth('school')->user();
+    $name = auth('admin')->check() ? $user->name : $user->name_en;
 @endphp
 <nav
     class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
@@ -16,7 +17,7 @@
         <div class="navbar-nav align-items-center">
             <div class="nav-item navbar-search-wrapper mb-0">
                 <span class="d-none d-md-inline-block text-muted fw-normal">
-                    <a class="d-block">{{ $user->name }}</a>
+                    <a class="d-block">{{ $name }}</a>
                 </span>
             </div>
         </div>
@@ -67,8 +68,11 @@
                     </li>
                     <li>
                         <div class="d-grid px-2 pt-2 pb-1">
-
-                            <form method="post" action="{{ route('admin.logout') }}">
+                            @php
+                                $segments = request()->segments(); // تعطي مصفوفة: ['ar', 'admin', 'login']
+                                $prefix = in_array('admin', $segments) ? 'admin' : 'school';
+                            @endphp
+                            <form method="post" action="{{ route($prefix.'.logout') }}">
                                 @csrf
                                 <button class="btn btn-sm btn-danger btn-logout d-flex justify-content-center">
                                     <small class="align-middle">{{__('general.Logout')}}</small>

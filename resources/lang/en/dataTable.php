@@ -72,6 +72,17 @@ return [
     'child' => 'Child',
     'payment_status' => 'Payment Status',
     'total' => 'Total',
+    'paid'=> 'Paid',
+    'unpaid'=> 'Unpaid',
+    'completed' => 'Completed',
+    'user' => 'User',
+    'region' => 'Region',
+    'city' => 'City',
+    'block' => 'Block',
+    'street_name' => 'Street Name',
+    'building_no' => 'Building No',
+    'address' => 'Address',
+    'is_default' => 'Is Default',
 
 
 

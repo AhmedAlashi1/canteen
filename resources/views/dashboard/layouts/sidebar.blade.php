@@ -16,7 +16,9 @@
 
     <ul class="menu-inner py-1">
         <!-- Main Section -->
+
         <li class="menu-header">@lang('general.Main')</li>
+        @if (Auth::guard('admin')->check())
         <li class="menu-item  {{ Route::is('dashboard') ? 'active' : '' }}">
             <a href="{{ route('admin.dashboard') }}" class="menu-link side-sclaex">
                 <i class="menu-icon">
@@ -32,7 +34,7 @@
         </li>
 
         <!-- Management Section -->
-        @if (Auth::guard('admin')->check())
+
         <li class="menu-header">@lang('general.Management')</li>
         <li class="menu-item {{ Route::is('admin.admins.*') ? 'active' : '' }}">
             <a href="{{ route('admin.admins.index') }}" class="menu-link side-sclaex">
@@ -140,7 +142,41 @@
                 <div>{{__('general.General Settings')}}</div>
             </a>
         </li>
+        @elseif (Auth::guard('school')->check())
+            <li class="menu-item  {{ Route::is('dashboard') ? 'active' : '' }}">
+                <a href="{{ route('school.dashboard') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-dashboard">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M12 13m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                            <path d="M13.45 11.55l2.05 -2.05" />
+                            <path d="M6.4 20a9 9 0 1 1 11.2 0z" />
+                        </svg>
+                    </i>
+                    <div>@lang('general.Dashboard')</div>
+                </a>
+            </li>
+
+            <li class="menu-header">@lang('general.General')</li>
+
+
+            <li class="menu-item {{ Route::is('school.users.*') ? 'active' : '' }}">
+                <a href="{{ route('school.users.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-users"></i>
+                    <div>{{__('general.Users')}}</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Route::is('school.children.*') ? 'active' : '' }}">
+                <a href="{{ route('school.children.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-user"></i>
+                    <div>{{__('general.Children')}}</div>
+                </a>
+            </li>
+
+
         @endif
+
     </ul>
 
 </aside>

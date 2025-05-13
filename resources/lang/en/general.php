@@ -207,6 +207,22 @@ return[
     'Orders' => 'Orders',
     'Orders School' => 'Orders School',
     'Orders Store' => 'Orders Store',
+    'Customer Info' => 'Customer Info',
+    'Order Summary' => 'Order Summary',
+    'Show order' => 'Show order',
+    'Order ID' => 'Order ID',
+    'Total' => 'Total',
+    'Discount' => 'Discount',
+    'Payment Status' => 'Payment Status',
+    'Payment ID' => 'Payment ID',
+    'Transaction ID' => 'Transaction ID',
+    'Phone' => 'Phone',
+    'Day' => 'Day',
+    'Product' => 'Product',
+    'Quantity' => 'Quantity',
+    'Price' => 'Price',
+
+
 
 
 

@@ -15,12 +15,21 @@ class UsersDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function ($user) {
-                return view('components.datatable.actions', [
+                $auth = auth('admin')->check() ? 'admin' : 'school';
+
+                $viewData = [
                     'id' => $user->id,
-                    'routeEdit' => 'admin.users.edit',
-                    'routeDelete' => 'admin.users.destroy',
                     'name' => $user->name,
-                ]);
+                ];
+
+                if ($auth === 'admin') {
+                    $viewData['routeEdit'] = 'admin.users.edit';
+                    $viewData['routeDelete'] = 'admin.users.destroy';
+                    $viewData['routeAddress'] = 'admin.address.index';
+                }
+
+                return view('components.datatable.actions', $viewData);
+
             })
             ->addColumn('image', function ($user) {
                 return view('components.datatable.image', ['photo' => $user->image]);
@@ -45,7 +54,15 @@ class UsersDataTable extends DataTable
 
     public function query(User $model)
     {
-        return $model->newQuery();
+        $auth = auth('admin')->check() ? 'admin' : 'school';
+        if ($auth == 'admin'){
+            return $model->newQuery();
+        }else{
+
+            return $model->newQuery()->whereHas('children', function ($query) {
+                $query->where('school_id', auth('school')->user()->id);
+            });
+        }
     }
 
     public function html()
@@ -69,6 +86,7 @@ class UsersDataTable extends DataTable
             Column::make('orders_count')->title(__('dataTable.orders_count'))->searchable(false),
             Column::make('status')->title(__('dataTable.status')),
             Column::make('created_at')->title(__('dataTable.created_at')),
+
             Column::computed('action')->title(__('dataTable.action'))->exportable(false)->printable(false),
         ];
     }

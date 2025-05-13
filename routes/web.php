@@ -6,7 +6,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 use Laravel\Telescope\Telescope;
-
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +25,18 @@ use Laravel\Telescope\Telescope;
 Route::get('/', function () {
     return 'welcome';
 })->name('home');
+
+Route::get('/', function () {
+    if (!Auth::guard('school')->check() && !Auth::guard('admin')->check()) {
+        return redirect()->route('school.login');
+    }elseif (Auth::guard('school')->check()) {
+        return redirect()->route('school.dashboard');
+    }elseif (Auth::guard('admin')->check()) {
+        return redirect()->route('admin.dashboard');
+    }else{
+        return redirect()->route('admin.login');
+    }
+});
 
 
 

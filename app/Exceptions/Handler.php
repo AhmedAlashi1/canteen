@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
                     !$request->is('telescope*')
 
                 ) {
-                    return response()->view('frontEnd.error', [], 404);
+                    return response()->view('errors.404', [], 404);
                 }
             }
 

@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Auth\Authenticatable;
 
-class School extends Model
+class School extends Model implements AuthenticatableContract
 {
+    use Authenticatable;
     use HasFactory;
 
     protected $fillable = [
@@ -23,7 +26,8 @@ class School extends Model
         'image',
         'status',
         'city_id',
-        'region_id'
+        'region_id',
+        'password',
 
     ];
     protected $casts = [

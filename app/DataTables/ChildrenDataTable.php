@@ -13,22 +13,39 @@ class ChildrenDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function ($child) {
-                return view('components.datatable.actions', [
+
+                $auth = auth('admin')->check() ? 'admin' : 'school';
+                $viewData = [
                     'id' => $child->id,
-                    'routeEdit' => 'admin.children.edit',
-                    'routeDelete' => 'admin.children.destroy',
                     'name' => $child->name,
-                ]);
+                ];
+                if ($auth === 'admin') {
+                    $viewData['routeEdit'] = 'admin.children.edit';
+                    $viewData['routeDelete'] = 'admin.children.destroy';
+                }else{
+                    $viewData['routeEdit'] = 'school.children.edit';
+                    $viewData['routeDelete'] = 'school.children.destroy';
+                }
+
+                return view('components.datatable.actions', $viewData);
             })
             ->addColumn('image', function ($child) {
                 return view('components.datatable.image', ['photo' => $child->image]);
             })
             ->addColumn('status', function ($child) {
-                return match ($child->status) {
+                $statusText = match ($child->status) {
                     'active' => __('dataTable.active'),
                     'pending_approval' => __('dataTable.pending'),
                     default => __('dataTable.inactive'),
                 };
+
+                $badgeClass = match ($child->status) {
+                    'active' => 'badge bg-success',
+                    'pending_approval' => 'badge bg-warning text-dark',
+                    default => 'badge bg-danger',
+                };
+
+                return '<span class="' . $badgeClass . '">' . $statusText . '</span>';
             })
             ->addColumn('created_at', function ($child) {
                 return $child->created_at->format('Y-m-d H:i');
@@ -41,7 +58,7 @@ class ChildrenDataTable extends DataTable
             })
 
 
-            ->rawColumns(['action', 'image']);
+            ->rawColumns(['action', 'image','status', 'user', 'school']);
     }
 
     public function query(Child $model)

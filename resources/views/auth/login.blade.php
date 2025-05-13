@@ -56,16 +56,18 @@
                     <div class="card mb-0">
                         <div class="card-body">
                             <a href="javascript:void(0);" class="brand-logo d-flex align-items-center text-decoration-none">
-                                <img src="{{ asset('dashboard/icon/Group.svg') }}" height="80" alt="Logo" class="mr-1">
-{{--                                <h2 class="brand-text text-primary mb-0">{{__('auth.Effect')}}</h2>--}}
+                                <div class="text-center">
+                                    <img src="{{ asset('logo.png') }}" height="60" alt="Logo" class="mb-1">
+                                    <h2 class="brand-text text-primary mb-0">{{ __('SMART CANTEEN') }}</h2>
+                                </div>
                             </a>
-                            <h4 class="card-title mb-1">{{__('auth.Welcome to smart Canteen!')}} 👋</h4>
-                            <p class="card-text mb-2">{{__('auth.Please sign-in to your account and start the adventure')}}</p>
                             @php
-//                                $prefix = request()->is('*/admin/*') ? 'admin' : 'school';
-                                $prefix = 'admin';
-
+                                $segments = request()->segments(); // تعطي مصفوفة: ['ar', 'admin', 'login']
+                                $prefix = in_array('admin', $segments) ? 'admin' : 'school';
                             @endphp
+                            <h4 class="card-title mb-1">{{__('auth.Welcome to smart Canteen!')}} 👋</h4>
+                            <p class="card-text mb-2">{{$prefix == 'admin' ? __('auth.description_admin') : __('auth.description_school')}}</p>
+
 
                             <form class="auth-login-form mt-2" method="POST" action="{{ route($prefix .'.login') }}" onsubmit="disableButton()">
                                 @csrf

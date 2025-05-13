@@ -9,5 +9,8 @@ return[
     'Effect'=>'Smart Canteen',
     'Login Page - Effect Dashboard'=>'Login Page - Effect Dashboard',
     'Welcome to smart Canteen!' => 'Welcome to Smart Canteen!',
-    'Login Page - Smart Canteen Dashboard' => 'Login Page - Smart Canteen Dashboard'
+    'Login Page - Smart Canteen Dashboard' => 'Login Page - Smart Canteen Dashboard',
+    'description_admin'=>'Admin Login - Smart Canteen System',
+    'description_school'=>'School Login - Smart Canteen System',
+
 ];

@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\DataTables\SchoolsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSchoolRequest;
+use App\Http\Requests\UpdateSchoolRequest;
 use App\Models\City;
 use App\Models\Region;
 use App\Models\School;
 use App\Traits\ImageTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class SchoolController extends Controller
@@ -49,6 +51,8 @@ class SchoolController extends Controller
             $image_path = $this->uploadImage('admin', $request->image);
             $data['image'] = $image_path;
         }
+        //    'password' => Hash::make($request->input('password')),
+        $data['password'] = Hash::make($request->input('password'));
 
         School::create($data);
 
@@ -77,7 +81,7 @@ class SchoolController extends Controller
      * Update the specified resource in storage.
      */
 
-    public function update(StoreSchoolRequest $request, School $school)
+    public function update(UpdateSchoolRequest $request, School $school)
     {
         $data = $request->validated();
         $levels = $request->input('levels'); // سيأخذ القيم كـ array

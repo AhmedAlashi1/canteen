@@ -15,7 +15,7 @@
                         <h4 class="card-title">{{__('general.Add School')}}</h4>
                     </div>
                     <div class="card-body">
-                        <form class="form" action="{{ route('admin.schools.store') }}" method="post" enctype="multipart/form-data">
+                        <form class="form" action="{{ route('school.schools.store') }}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <!-- Name Arabic -->
@@ -91,7 +91,7 @@
                                 </div>
                                 <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label class="col-form-label-sm" for="levels">{{__('general.City')}}</label>
+                                        <label class="col-form-label-sm" for="levels">{{__('general.city')}}</label>
                                         <select name="city_id" id="city_id" class="form-control form-control-sm " required>
 {{--                                            <option value="">{{ __('general.choose') }}</option>--}}
 
@@ -210,17 +210,20 @@
                                         @enderror
                                     </div>
                                 </div>
+
+
+                                <!-- Image -->
                                 <div class="col-md-6 col-12">
                                     <div class="form-group">
                                         <label for="image">{{__('general.Image')}}</label>
                                         <div class="custom-file">
-                                            <input
-                                                value="{{ old('image') }}"
-                                                name="image"
-                                                type="file"
-                                                class="custom-file-input @error('image') is-invalid @else {{ old('image') ? 'is-valid' : '' }} @enderror"
-                                                id="customFile"
-                                            />
+                                        <input
+                                            value="{{ old('image') }}"
+                                            name="image"
+                                            type="file"
+                                            class="custom-file-input @error('image') is-invalid @else {{ old('image') ? 'is-valid' : '' }} @enderror"
+                                            id="customFile"
+                                        />
                                             <label class="custom-file-label" for="customFile">{{__('general.Choose file')}}</label>
                                         </div>
                                         @error('image')
@@ -228,38 +231,6 @@
                                         @enderror
                                     </div>
                                 </div>
-
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group">
-                                        <label class="col-form-label-sm" for="password">{{__('general.Password')}}</label>
-                                        <input
-                                            name="password"
-                                            type="password"
-                                            id="password"
-                                            class="form-control form-control-sm @error('password') is-invalid @else {{ old('password') ? 'is-valid' : '' }} @enderror"
-                                            placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                            required
-                                        />
-                                        @error('password')
-                                        <span class="col-form-label-sm text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group">
-                                        <label class="col-form-label-sm" for="password_confirmation">{{__('general.Password confirmation')}}</label>
-                                        <input
-                                            type="password"
-                                            id="password_confirmation"
-                                            class="form-control form-control-sm @if(session('password_confirmation') && !session('errors')->has('password')) is-valid @endif"
-                                            name="password_confirmation"
-                                            placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                        />
-                                    </div>
-                                </div>
-
-                                <!-- Image -->
 
                                 <!-- Status -->
                                 <div class="col-md-6 col-12">
@@ -318,7 +289,7 @@
     <script>
         function loadRegions(cityId, selectedRegionId = null) {
             $.ajax({
-                url: "{{ route('admin.get.regions') }}",
+                url: "{{ route('school.get.regions') }}",
                 type: "GET",
                 data: { city_id: cityId },
                 success: function (res) {

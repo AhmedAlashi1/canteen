@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreSchoolRequest extends FormRequest
+class UpdateSchoolRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,7 +32,7 @@ class StoreSchoolRequest extends FormRequest
             'phone1' => 'nullable|string|max:20',
             'phone2' => 'nullable|string|max:20',
             //edit email unique
-            'email' => 'nullable|email|max:255|unique:schools,email' ,
+            'email' => 'nullable|email|max:255|unique:schools,email'.($this->school->id) ,
             'password' => 'required|string|min:6|confirmed',
             'location' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',

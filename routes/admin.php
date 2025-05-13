@@ -1,22 +1,23 @@
 <?php
 
+use App\Http\Controllers\Admin\AddressController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\SchoolController;
 use App\Http\Controllers\Admin\AdsController;
-use App\Http\Controllers\Admin\CityController;
-use App\Http\Controllers\Admin\RegionController;
-use App\Http\Controllers\Admin\ContactUsController;
-use App\Http\Controllers\Admin\UsersController;
-use App\Http\Controllers\Admin\SupplierController;
-use App\Http\Controllers\Admin\ChildrenController;
-use App\Http\Controllers\Admin\OrdersController;
-use App\Http\Controllers\Admin\CouponsController;
-use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductsController;
+use App\Http\Controllers\Admin\ChildrenController;
+use App\Http\Controllers\Admin\CityController;
+use App\Http\Controllers\Admin\ContactUsController;
+use App\Http\Controllers\Admin\CouponsController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrdersController;
 use App\Http\Controllers\Admin\PaymentMethodController;
-use App\Http\Controllers\Dashboard\AuthController;
+use App\Http\Controllers\Admin\ProductsController;
+use App\Http\Controllers\Admin\RegionController;
+use App\Http\Controllers\Admin\SchoolController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\UsersController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -39,6 +40,16 @@ Route::prefix(LaravelLocalization::setLocale() . '/admin')->middleware(['web'])
             Route::put('users/{id}', [UsersController::class, 'update'])->name('users.update');
             Route::delete('users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
+            //address
+            Route::get('address/{id}', [AddressController::class, 'index'])->name('address.index');
+//            Route::get('address/{id}/create', [AddressController::class, 'create'])->name('address.create');
+//            Route::post('address/{id}', [AddressController::class, 'store'])->name('address.store');
+//            Route::get('address/{id}/edit', [AddressController::class, 'edit'])->name('address.edit');
+//            Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
+            Route::delete('address/{id}', [AddressController::class, 'destroy'])->name('address.destroy');
+
+
+
             //children
             Route::get('children', [ChildrenController::class, 'index'])->name('children.index');
             Route::get('children/{id}/edit', [ChildrenController::class, 'edit'])->name('children.edit');
@@ -47,8 +58,8 @@ Route::prefix(LaravelLocalization::setLocale() . '/admin')->middleware(['web'])
 
             //orders
             Route::get('orders', [OrdersController::class, 'index'])->name('orders.index');
-            //show order
             Route::get('orders/{id}', [OrdersController::class, 'show'])->name('orders.show');
+            Route::delete('orders/{id}', [OrdersController::class, 'destroy'])->name('orders.destroy');
 
 
 

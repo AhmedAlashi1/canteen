@@ -30,4 +30,12 @@ class OrdersController extends Controller
         // Update order logic here
         return redirect()->route('admin.orders.index')->with('success', 'Order updated successfully.');
     }
+    //delete order
+    public function destroy($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->delete();
+        return response()->json('success');
+
+    }
 }

@@ -11,7 +11,17 @@
         <i class="bi bi-trash-fill"></i>
     </button>
 @endif
+@if(!empty($routeShow))
+    <a href="{{ route($routeShow, $id) }}" type="button" class="btn btn-primary btn-sm rounded rounded-2 mb-2 mr-2">
+        <i class="bi bi-eye-fill"></i>
+    </a>
+@endif
 
+@if(!empty($routeAddress))
+    <a href="{{ route($routeAddress, $id) }}" type="button" class="btn btn-warning btn-sm rounded rounded-2 mb-2 mr-2">
+        <i class="bi bi-geo-alt-fill"></i>
+    </a>
+@endif
 @if(!empty($ServiceDetails))
     <a href="{{ route($ServiceDetails, $id )}}" type="button" class="btn btn-warning btn-sm rounded rounded-2 mb-2 mr-2">
         <i class="bi bi-credit-card-2-front"></i>

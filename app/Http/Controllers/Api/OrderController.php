@@ -64,16 +64,18 @@ class OrderController extends Controller
         // [3] جلب الطفل والمستخدم
         $child = Child::with('user')->find($childId);
         $user = $child->user;
-
         // [4] إنشاء الطلب الجديد مباشرة
+
         $order = Order::create([
             'child_id' => $child->id,
             'user_id' => $user->id,
             'type' => 'school',
             'status' => 'pending',
             'payment_status' => 'pending',
+            'payment_id' => $request->payment_id,
             'total' => 0,
         ]);
+
 
         $total = 0;
         $orderProducts = [];
@@ -154,7 +156,6 @@ class OrderController extends Controller
 
         // [6] تحديث الطلب بالمعلومات النهائية
         $order->update([
-            'payment_id' => $request->payment_id,
             'coupon_id' => $coupon?->id,
             'discount' => round($discount, 3),
             'total' => round($finalTotal, 3),
@@ -182,7 +183,6 @@ class OrderController extends Controller
         $phone = substr($phone, -11);
         $paymentMethod = PaymentMethod::find($request->payment_id);
         $paymentMethodId = PaymentMethod::ALL_METHODS[$paymentMethod->slug] ?? 1;
-
 
         $invoiceData = [
             'InvoiceValue' => round($finalTotal, 3),

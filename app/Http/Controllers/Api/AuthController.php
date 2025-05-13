@@ -85,7 +85,8 @@ class AuthController extends Controller
             return sendError($massage);
         }
         $data['password'] = $phone;
-        $data['activation_code'] = rand(1111, 9999);
+//        $data['activation_code'] = rand(1111, 9999);
+        $data['activation_code'] = 1234;
         $data['name'] = $request->name;
         $data['phone'] = $phone;
         $data['device_token'] = $request->device_token;
@@ -158,11 +159,10 @@ class AuthController extends Controller
             if ($user->save()) {
                 $token = $user->createToken('authToken')->plainTextToken;
                 $userdata = [
-                    'user_id' => $user->id,
-                    'phone' => $user->phone,
-                    'name' => $user->name,
-                    'token' => $token
+                    'user' => new UserResource($user),
+                    'token' => $token,
                 ];
+
                 return sendResponse($userdata);
             } else {
                 return sendError('update_error');

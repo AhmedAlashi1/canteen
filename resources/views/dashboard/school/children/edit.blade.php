@@ -19,7 +19,7 @@
                         <h4 class="card-title">{{__('general.Update Child')}} </h4>
                     </div>
                     <div class="card-body">
-                        <form class="form" action="{{ route('admin.children.update', $child->id) }}" method="post" enctype="multipart/form-data">
+                        <form class="form" action="{{ route('school.children.update', $child->id) }}" method="post" enctype="multipart/form-data">
                             @method('PUT')
                             @csrf
                             <div class="row">
