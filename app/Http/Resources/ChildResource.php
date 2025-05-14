@@ -18,6 +18,7 @@ class ChildResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'level' => $this->level,
+            'level_id' => $this->level_id,
             'student_number' => $this->student_number,
             'image' => url($this->image),
             'status' => $this->status,

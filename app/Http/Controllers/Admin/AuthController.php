@@ -39,7 +39,7 @@ class AuthController extends Controller
         if (Auth::guard($guard)->attempt([
             'email' => $credentials['login-email'],
             'password' => $credentials['login-password']
-        ])) {
+        ], $request->filled('remember'))) {
             return redirect()->route($userType.'.dashboard'); // قم بتوجيهه إلى الصفحة المناسبة للمسؤول
         }
 

@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\LevelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,7 @@ Route::get('city', CityController::class);
 Route::get('region/{city_id?}', RegionController::class);
 Route::post('category', CategoryController::class);
 Route::get('payment-method', PaymentMethodController::class);
+Route::get('level', LevelController::class);
 
 
 Route::controller(AuthController::class)->group(function(){

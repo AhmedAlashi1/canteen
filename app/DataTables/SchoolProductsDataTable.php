@@ -23,9 +23,8 @@ class SchoolProductsDataTable extends DataTable
 
                 return view('components.datatable.actions', $viewData);
             })
-            ->addColumn('product_name', fn($row) => $row->product->name_ar ?? '-')
-            ->addColumn('supplier_name', fn($row) => $row->supplier->name ?? '-')
-            ->addColumn('school_name', fn($row) => $row->school->name ?? '-')
+            ->addColumn('product_name', fn($row) => $row->product->name_en ?? '-')
+//            ->addColumn('supplier_name', fn($row) => $row->supplier->name ?? '-')
             ->editColumn('price', fn($row) => number_format($row->price, 2))
             ->editColumn('created_at', fn($row) => $row->created_at?->format('Y-m-d H:i'))
             //image

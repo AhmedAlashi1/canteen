@@ -185,10 +185,16 @@
             <li class="menu-item {{ Route::is('school.products.*') ? 'active' : '' }}">
                 <a href="{{ route('school.products.index') }}" class="menu-link side-sclaex">
                     <i class="menu-icon tf-icons ti ti-briefcase"></i>
-{{--                    <i class="menu-icon tf-icons ti ti-package"></i>--}}
                     <div>{{__('general.warehouses')}}</div>
                 </a>
             </li>
+            <li class="menu-item {{ Route::is('school.orders.*') ? 'active' : '' }}">
+                <a href="{{ route('school.orders.index') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-shopping-cart"></i>
+                    <div>{{__('general.Orders')}}</div>
+                </a>
+            </li>
+
 
 
         @endif

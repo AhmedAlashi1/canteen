@@ -11,12 +11,14 @@ use Illuminate\Http\Request;
 class SchoolController extends Controller
 {
     //index
-    public function index(){
+    public function index(Request $request){
 
         $schools = School::where('status', 1)->with('city','region')
             ->orderBy('id', 'desc')
+            ->when(request('level'), function ($query) {
+                $query->whereRaw('FIND_IN_SET(?, level)', [request('level')]);
+            })
             ->get();
-
         return sendResponse(SchoolResource::collection($schools));
 
     }

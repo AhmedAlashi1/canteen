@@ -70,9 +70,9 @@ class SchoolProductsController extends Controller
         return view('dashboard.school.school_products.edit', compact('schoolProduct'));
     }
     //update
-    public function update(Request $request , SchoolProduct $product)
+    public function update(Request $request , SchoolProduct $SchoolProduct)
     {
-        return $request->all();
+//        return $request->all();
         $school = auth()->user()->id;
         $request->merge(['school_id' => $school]);
         $data = $request->validate([
@@ -82,15 +82,15 @@ class SchoolProductsController extends Controller
             'quantity' => 'required|integer',
             'supplier_id' => 'nullable|exists:suppliers,id',
         ]);
-        $product->update($data);
+        $SchoolProduct->update($data);
         return redirect()->route('school.school-products.index')->with('success', __('Product updated successfully.'));
 
     }
     //destroy
-    public function destroy(SchoolProduct $product)
+    public function destroy(SchoolProduct $SchoolProduct)
     {
 
-        $product->delete();
+        $SchoolProduct->delete();
         return response()->json('success');
     }
 

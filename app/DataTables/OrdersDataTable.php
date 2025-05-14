@@ -13,6 +13,15 @@ class OrdersDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function ($order) {
+                $auth = auth()->guard('admin')->check() ? 'admin' : 'school';
+                if ($auth == 'school') {
+                    return view('components.datatable.actions', [
+                        'id' => $order->id,
+                        'routeShow' => 'school.orders.show',
+                        'routeDelete' => 'school.orders.destroy',
+                        'name' => $order->id,
+                    ]);
+                }
                 return view('components.datatable.actions', [
                     'id' => $order->id,
                     'routeShow' => 'admin.orders.show',
@@ -44,7 +53,7 @@ class OrdersDataTable extends DataTable
             ->addColumn('payment_status', function ($order) {
                 $status = __( 'dataTable.' . $order->payment_status );
                 $colors = [
-                    'Paid' => ['background' => 'green', 'text' => 'white'],
+                    'paid' => ['background' => 'green', 'text' => 'white'],
                     'pending' => ['background' => 'orange', 'text' => 'white'],
                 ];
                 $color = $colors[$order->payment_status] ?? ['background' => 'red', 'text' => 'white'];
@@ -53,6 +62,10 @@ class OrdersDataTable extends DataTable
             })
             ->addColumn('type', function ($order) {
                 return __( 'dataTable.' . $order->type );
+            })
+            //student_number
+            ->addColumn('student_number', function ($order) {
+                return $order->child ? $order->child->student_number : '-';
             })
             ->addColumn('created_at', function ($order) {
                 return $order->created_at->format('Y-m-d H:i');
@@ -81,11 +94,24 @@ class OrdersDataTable extends DataTable
         //payment_status
         ->filterColumn('payment_status', function ($query, $keyword) {
             $query->where('payment_status', 'like', "%{$keyword}%");
-        });
+        })
+        //student_number
+        ->filterColumn('student_number', function ($query, $keyword) {
+            $query->whereHas('child', function ($q) use ($keyword) {
+                $q->where('student_number', 'like', "%{$keyword}%");
+            });
+            });
     }
 
     public function query(Order $model)
     {
+        $auth = auth()->guard('admin')->check() ? 'admin' : 'school';
+        //if school
+        if ($auth == 'school') {
+            $model = $model->whereHas('child.school', function ($q) {
+                $q->where('id', auth()->guard('school')->user()->id);
+            });
+        }
         return $model->newQuery()->with(['user', 'child.school']);
     }
 
@@ -101,19 +127,24 @@ class OrdersDataTable extends DataTable
 
     public function getColumns(): array
     {
-        return [
+        $columns = [
             Column::make('id')->title(__('dataTable.id')),
             Column::make('user')->title(__('dataTable.father')),
             Column::make('child')->title(__('dataTable.child')),
-            //school
-            Column::make('school')->title(__('dataTable.school')),
+            Column::make('student_number')->title(__('dataTable.student_number')),
             Column::make('total')->title(__('dataTable.total')),
-            Column::make('type')->title(__('dataTable.type')),
             Column::make('status')->title(__('dataTable.status')),
             Column::make('payment_status')->title(__('dataTable.payment_status')),
             Column::make('created_at')->title(__('dataTable.created_at')),
             Column::computed('action')->title(__('dataTable.action'))->exportable(false)->printable(false),
         ];
+        if (auth()->guard('admin')->check()) {
+            $columns = array_merge($columns, [
+                Column::make('school')->title(__('dataTable.school')),
+                Column::make('type')->title(__('dataTable.type')),
+            ]);
+        }
+        return $columns;
     }
 
     protected function filename(): string

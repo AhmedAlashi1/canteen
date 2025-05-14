@@ -289,9 +289,16 @@
                                             multiple
                                             required
                                         >
-                                            <option value="primary" {{ in_array('primary', old('levels', [])) ? 'selected' : '' }}>{{ __('general.Primary') }}</option>
-                                            <option value="intermediate" {{ in_array('intermediate', old('levels', [])) ? 'selected' : '' }}>{{ __('general.Intermediate') }}</option>
-                                            <option value="secondary" {{ in_array('secondary', old('levels', [])) ? 'selected' : '' }}>{{ __('general.Secondary') }}</option>
+                                            //levels foreach
+                                            @php
+                                            $levels = \App\Models\Level::all();
+                                            @endphp
+                                            @foreach($levels as $level)
+                                                <option value="{{ $level->id }}" {{ in_array($level->id, old('levels', [])) ? 'selected' : '' }}>{{ $level->name_en }}</option>
+                                            @endforeach
+{{--                                            <option value="primary" {{ in_array('primary', old('levels', [])) ? 'selected' : '' }}>{{ __('general.Primary') }}</option>--}}
+{{--                                            <option value="intermediate" {{ in_array('intermediate', old('levels', [])) ? 'selected' : '' }}>{{ __('general.Intermediate') }}</option>--}}
+{{--                                            <option value="secondary" {{ in_array('secondary', old('levels', [])) ? 'selected' : '' }}>{{ __('general.Secondary') }}</option>--}}
                                         </select>
 
                                         @error('levels')

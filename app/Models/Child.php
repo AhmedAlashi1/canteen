@@ -17,6 +17,7 @@ class Child extends Model
         'student_number',
         'image',
         'status',
+        'level_id',
     ];
 
     public function user()
@@ -31,6 +32,10 @@ class Child extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+    public function level()
+    {
+        return $this->belongsTo(Level::class);
     }
 
     public static $rulesApi = [

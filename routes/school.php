@@ -7,6 +7,7 @@ use App\Http\Controllers\School\DashboardController ;
 use App\Http\Controllers\School\UsersController ;
 use App\Http\Controllers\School\ChildrenController ;
 use App\Http\Controllers\School\ProductsController ;
+use App\Http\Controllers\School\OrdersController ;
 use App\Http\Controllers\School\SchoolProductsController ;
 
 
@@ -32,6 +33,11 @@ Route::prefix('school')->name('school.')->group(function () {
         Route::resource('school-products', SchoolProductsController::class);
         //products select
         Route::get('product/select', [ProductsController::class, 'select'])->name('products.select');
+
+        //orders
+        Route::get('orders', [OrdersController::class, 'index'])->name('orders.index');
+        Route::get('orders/{id}', [OrdersController::class, 'show'])->name('orders.show');
+        Route::delete('orders/{id}', [OrdersController::class, 'destroy'])->name('orders.destroy');
 
 
 //        Route::get('school/select', [SchoolController::class, 'select'])->name('schools.select');
