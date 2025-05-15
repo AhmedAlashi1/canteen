@@ -14,6 +14,7 @@ class OrderProduct extends Model
         'quantity',
         'product_size_id',
         'type',
+        'price',
     ];
 
     // علاقات مقترحة

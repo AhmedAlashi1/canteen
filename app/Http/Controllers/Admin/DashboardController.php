@@ -3,11 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Child;
+use App\Models\Order;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index(){
+
+        $usersCount = User::count();
+        $childrenCount = Child::count();
+        $ordersCount = Order::where('payment_status', 'paid')->count();
+        //$ordersPrice
+        $ordersPrice = Order::where('payment_status', 'paid')->sum('total');
+
         $lastWeek = $this->getLastWeekLabels();
         $datasets = $this->generateDatasets($lastWeek);
 
@@ -54,7 +64,7 @@ class DashboardController extends Controller
 //        $menu = SideMenu::where('side_id',null)->with('side')->get();
 //        $sequences =SideMenu::where('side_id', null)->lazy();
 
-        return view('dashboard.dashboard',compact( 'lineChart'));
+        return view('dashboard.dashboard',compact( 'lineChart','usersCount', 'childrenCount', 'ordersCount', 'ordersPrice'));
     }
 
     private function createChart($name, $type, $labels, $datasets, $options)
@@ -91,40 +101,48 @@ class DashboardController extends Controller
             $startDate = $day->copy()->startOfDay();
             $endDate = $day->copy()->endOfDay();
 
-            $customers = DB::table('users')
+//            $customers = DB::table('users')
+//                ->whereBetween('created_at', [$startDate, $endDate])
+//                ->count();
+            $ordersCount = Order::where('payment_status', 'paid')
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->count();
+            //children
+            $childrenCount = Child::whereBetween('created_at', [$startDate, $endDate])
+                ->count();
 
-            $usersDataset[] = $customers;
+            $childrenDataset[] = $childrenCount;
+            $ordersDataset[] = $ordersCount;
+
 
 
         }
 
         $datasets[] = [
-            "label" => __('general.contact clients'),
+            "label" => __('general.children'),
             'backgroundColor' => "#0162e8",
             'borderColor' => "#0162e8",
             "pointBorderColor" => "#0162e8",
             "pointBackgroundColor" => "#fff",
             "pointHoverBackgroundColor" => "#fff",
             "pointHoverBorderColor" => "#0162e8",
-            'data' => $usersDataset,
+            'data' => $childrenDataset,
             'fill'=> false,
             'tension'=> 0.3
         ];
 
-//        $datasets[] = [
-//            "label" => __('messages.Orders'),
-//            'backgroundColor' => "#f95374",
-//            'borderColor' => "#f95374",
-//            "pointBorderColor" => "#f95374",
-//            "pointBackgroundColor" => "#fff",
-//            "pointHoverBackgroundColor" => "#fff",
-//            "pointHoverBorderColor" => "#f95374",
-//            'data' => $ordersDataset,
-//            'fill'=> false,
-//            'tension'=> 0.3
-//        ];
+        $datasets[] = [
+            "label" => __('general.Orders'),
+            'backgroundColor' => "#f95374",
+            'borderColor' => "#f95374",
+            "pointBorderColor" => "#f95374",
+            "pointBackgroundColor" => "#fff",
+            "pointHoverBackgroundColor" => "#fff",
+            "pointHoverBorderColor" => "#f95374",
+            'data' => $ordersDataset,
+            'fill'=> false,
+            'tension'=> 0.3
+        ];
 //
 //        $datasets[] = [
 //            "label" => __('Ios'),

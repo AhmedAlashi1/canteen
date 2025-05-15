@@ -63,7 +63,12 @@ class ChildrenDataTable extends DataTable
 
     public function query(Child $model)
     {
-        return $model->newQuery();
+        $auth = auth('admin')->check() ? 'admin' : 'school';
+        if ($auth === 'admin') {
+            return $model->newQuery()->with('user', 'school');
+        } else {
+            return $model->newQuery()->where('school_id', auth('school')->user()->id)->with('user', 'school');
+        }
     }
 
     public function html()

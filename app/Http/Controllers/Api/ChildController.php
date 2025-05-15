@@ -49,6 +49,7 @@ class ChildController extends Controller
         $data['user_id'] = $user->id;
         $data['status'] = 'pending_approval';
 
+
        Child::create($data);
         return sendResponse($data, 'Child Created Successfully');
     }

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\School;
 
 use App\Http\Controllers\Controller;
+use App\Models\Child;
+use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,6 +13,21 @@ class DashboardController extends Controller
 {
 
     public function index(){
+        //
+        $usersCount = User::whereHas('children', function ($query ) {
+            $query->where('school_id',  auth('school')->user()->id);
+        })->count();
+        $childrenCount = Child::where('school_id', auth('school')->user()->id)->count();
+        $ordersCount = Order::where('payment_status', 'paid')
+        ->whereHas('child', function ($query) {
+            $query->where('school_id', auth('school')->user()->id);
+        })->count();
+        $ordersPrice = Order::where('payment_status', 'paid')
+        ->whereHas('child', function ($query) {
+            $query->where('school_id', auth('school')->user()->id);
+        })->sum('total');
+
+
         $lastWeek = $this->getLastWeekLabels();
         $datasets = $this->generateDatasets($lastWeek);
 
@@ -56,7 +74,7 @@ class DashboardController extends Controller
 //        $menu = SideMenu::where('side_id',null)->with('side')->get();
 //        $sequences =SideMenu::where('side_id', null)->lazy();
 
-        return view('dashboard.school.dashboard',compact( 'lineChart'));
+        return view('dashboard.school.dashboard',compact( 'lineChart','usersCount','childrenCount','ordersCount','ordersPrice'));
     }
 
     private function createChart($name, $type, $labels, $datasets, $options)
@@ -93,40 +111,50 @@ class DashboardController extends Controller
             $startDate = $day->copy()->startOfDay();
             $endDate = $day->copy()->endOfDay();
 
-            $customers = DB::table('users')
+            $ordersCount = Order::where('payment_status', 'paid')
+                ->whereHas('child', function ($query) {
+                    $query->where('school_id', auth('school')->user()->id);
+                })
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+            //children
+            $childrenCount = Child::where('school_id', auth('school')->user()->id)
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->count();
 
-            $usersDataset[] = $customers;
+
+
+            $childrenDataset[] = $childrenCount;
+            $ordersDataset[] = $ordersCount;
 
 
         }
 
         $datasets[] = [
-            "label" => __('general.contact clients'),
+            "label" => __('general.children'),
             'backgroundColor' => "#0162e8",
             'borderColor' => "#0162e8",
             "pointBorderColor" => "#0162e8",
             "pointBackgroundColor" => "#fff",
             "pointHoverBackgroundColor" => "#fff",
             "pointHoverBorderColor" => "#0162e8",
-            'data' => $usersDataset,
+            'data' => $childrenDataset,
             'fill'=> false,
             'tension'=> 0.3
         ];
 
-//        $datasets[] = [
-//            "label" => __('messages.Orders'),
-//            'backgroundColor' => "#f95374",
-//            'borderColor' => "#f95374",
-//            "pointBorderColor" => "#f95374",
-//            "pointBackgroundColor" => "#fff",
-//            "pointHoverBackgroundColor" => "#fff",
-//            "pointHoverBorderColor" => "#f95374",
-//            'data' => $ordersDataset,
-//            'fill'=> false,
-//            'tension'=> 0.3
-//        ];
+        $datasets[] = [
+            "label" => __('general.Orders'),
+            'backgroundColor' => "#f95374",
+            'borderColor' => "#f95374",
+            "pointBorderColor" => "#f95374",
+            "pointBackgroundColor" => "#fff",
+            "pointHoverBackgroundColor" => "#fff",
+            "pointHoverBorderColor" => "#f95374",
+            'data' => $ordersDataset,
+            'fill'=> false,
+            'tension'=> 0.3
+        ];
 //
 //        $datasets[] = [
 //            "label" => __('Ios'),

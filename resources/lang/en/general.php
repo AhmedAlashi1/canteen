@@ -222,6 +222,27 @@ return[
     'Quantity' => 'Quantity',
     'Price' => 'Price',
     'warehouses' => 'Warehouses',
+    'Number Users'=>'User Numbers',
+    'Number children'=>'Number Children',
+    'Number Orders'=>'Number Orders',
+    'Orders Price'=>'Orders Price',
+    'number of orders'=>'Number of Orders',
+    'children' => 'Children',
+    'Canteen'=>'Canteen',
+    'search student'=>'Search Student',
+    'search' => 'Search',
+    'student_number' => 'Student Number',
+    'student_name' => 'Student Name',
+    'student_image' => 'Student Image',
+    'student_level' => 'Student Level',
+    'student_status' => 'Student Status',
+    'orders_today' => 'Orders Today',
+    'Order_number' => 'Order Number',
+    'Order_date' => 'Order Date',
+    'Order_status' => 'Order Status',
+    'Order_total' => 'Order Total',
+    'name' => 'Name',
+
 
 
 

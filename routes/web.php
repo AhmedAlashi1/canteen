@@ -20,24 +20,21 @@ use Illuminate\Support\Facades\Auth;
 */
 
 
-//telescope
-//home
-Route::get('/', function () {
-    return 'welcome';
-})->name('home');
-
-Route::get('/', function () {
-    if (!Auth::guard('school')->check() && !Auth::guard('admin')->check()) {
-        return redirect()->route('school.login');
-    }elseif (Auth::guard('school')->check()) {
-        return redirect()->route('school.dashboard');
-    }elseif (Auth::guard('admin')->check()) {
-        return redirect()->route('admin.dashboard');
-    }else{
-        return redirect()->route('admin.login');
+Route::group(
+    ['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localize']], // يمكن أن يكون middleware مختلف حسب إعداداتك
+    function () {
+        Route::get('/', function () {
+            if (!Auth::guard('school')->check() && !Auth::guard('admin')->check()) {
+                return redirect()->route('school.login');
+            } elseif (Auth::guard('school')->check()) {
+                return redirect()->route('school.dashboard');
+            } elseif (Auth::guard('admin')->check()) {
+                return redirect()->route('admin.dashboard');
+            } else {
+                return redirect()->route('admin.login');
+            }
+        });
     }
-});
-
-
+);
 
 

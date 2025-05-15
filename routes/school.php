@@ -9,9 +9,11 @@ use App\Http\Controllers\School\ChildrenController ;
 use App\Http\Controllers\School\ProductsController ;
 use App\Http\Controllers\School\OrdersController ;
 use App\Http\Controllers\School\SchoolProductsController ;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
-
-Route::prefix('school')->name('school.')->group(function () {
+Route::prefix(LaravelLocalization::setLocale() . '/school')->middleware(['web'])
+    ->name('school.')
+    ->group(function () {
     Route::get('login', [SchoolAuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [SchoolAuthController::class, 'login']);
     Route::post('logout', [SchoolAuthController::class, 'logout'])->name('logout');
@@ -38,6 +40,11 @@ Route::prefix('school')->name('school.')->group(function () {
         Route::get('orders', [OrdersController::class, 'index'])->name('orders.index');
         Route::get('orders/{id}', [OrdersController::class, 'show'])->name('orders.show');
         Route::delete('orders/{id}', [OrdersController::class, 'destroy'])->name('orders.destroy');
+
+//        Route::get('/student-search', [StudentController::class, 'search'])->name('student.search');
+        //canteen
+        Route::get('search', [ChildrenController::class, 'search'])->name('search');
+
 
 
 //        Route::get('school/select', [SchoolController::class, 'select'])->name('schools.select');

@@ -13,12 +13,18 @@ class Child extends Model
         'school_id',
         'user_id',
         'name',
-        'level',
+//        'level',
         'student_number',
         'image',
         'status',
         'level_id',
     ];
+    //level_name
+    protected $appends = ['level_name'];
+    public function getLevelNameAttribute()
+    {
+        return $this->level ? $this->level->name_en : null;
+    }
 
     public function user()
     {

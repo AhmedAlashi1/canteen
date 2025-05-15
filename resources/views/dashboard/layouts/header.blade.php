@@ -27,14 +27,13 @@
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             <!-- Language Switcher -->
             <li class="nav-item language-switcher">
-                @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
-                    <a class="nav-link {{ App::getLocale() === $localeCode ? 'active' : '' }}"
-                       hreflang="{{ $localeCode }}"
-                       href="{{ LaravelLocalization::getLocalizedURL(LaravelLocalization::getCurrentLocale() == 'ar' ? 'en' : 'ar') }}">
-                        {{ strtoupper($localeCode) }}
-                    </a>
-                @endforeach
-
+                @php
+                    $current = \Illuminate\Support\Facades\App::getLocale();
+                    $other = $current === 'ar' ? 'en' : 'ar';
+                @endphp
+                <a class="nav-link active" hreflang="{{ $other }}" href="{{ LaravelLocalization::getLocalizedURL($other, null, [], true) }}">
+                    {{ strtoupper($other) }}
+                </a>
             </li>
             <!-- /Language Switcher -->
 

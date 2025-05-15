@@ -194,7 +194,12 @@
                     <div>{{__('general.Orders')}}</div>
                 </a>
             </li>
-
+            <li class="menu-item {{ Route::is('school.search*') ? 'active' : '' }}">
+                <a href="{{ route('school.search') }}" class="menu-link side-sclaex">
+                    <i class="menu-icon tf-icons ti ti-search"></i>
+                    <div>{{__('general.Canteen')}}</div>
+                </a>
+            </li>
 
 
         @endif
