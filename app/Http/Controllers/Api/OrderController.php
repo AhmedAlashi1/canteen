@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Basket;
 use App\Models\Child;
 use App\Models\Coupon;
 use App\Models\Order;
@@ -107,6 +108,7 @@ class OrderController extends Controller
                 'product_id' => $item['product_id'],
                 'school_product_id' => $schoolProduct->id,
                 'quantity' => $item['quantity'],
+                'price' => $schoolProduct->price,
                 'type' => 'school',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -168,6 +170,9 @@ class OrderController extends Controller
             // تنفيذ عملية الدفع الناجحة مباشرة بدون واجهة دفع
             $this->completeOrderWithoutPayment($order, $request->days);
 
+            // clear the basket
+            Basket::where('child_id', $child->id)->where('type', 'school')->delete();
+
             return sendResponse([
                 'success' => true,
                 'message' => 'تم إنشاء الطلب بنجاح.',
@@ -216,6 +221,9 @@ class OrderController extends Controller
             'payment_status' => 'pending',
             'transaction_id' => null,
         ]);
+
+        // clear the basket
+        Basket::where('child_id', $child->id)->where('type', 'school')->delete();
 
         return sendResponse([
             'success' => true,
@@ -279,6 +287,7 @@ class OrderController extends Controller
                 'product_id' => $item['product_id'],
                 'product_size_id' => $item['product_size_id'],
                 'quantity' => $item['quantity'],
+                'price' => $productSize->price,
                 'type' => 'store',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -359,6 +368,8 @@ class OrderController extends Controller
                 }
             });
 
+            Basket::where('child_id', $child->id)->where('type', 'store')->delete();
+
             return sendResponse([
                 'success' => true,
                 'message' => 'تم إنشاء الطلب بنجاح (طلب مجاني).',
@@ -402,6 +413,8 @@ class OrderController extends Controller
             ]);
             return sendError('فشل إنشاء رابط الدفع. الرجاء المحاولة لاحقاً.');
         }
+
+        Basket::where('child_id', $child->id)->where('type', 'store')->delete();
 
         return sendResponse([
             'success' => true,
