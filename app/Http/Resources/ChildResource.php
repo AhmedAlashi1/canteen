@@ -22,8 +22,12 @@ class ChildResource extends JsonResource
             'student_number' => $this->student_number,
             'image' => url($this->image),
             'status' => $this->status,
+            'total_order_days' => $this->total_order_days,
+            'orders' => $this->orders ?? [],
             'school' => new SchoolResource($this->whenLoaded('school')),
             'user' => new UserResource($this->whenLoaded('user')),
+            //orderDays
+
 
 
         ];

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrdersSchoolsResource;
 use App\Models\Basket;
 use App\Models\Child;
 use App\Models\Coupon;
@@ -580,7 +581,7 @@ class OrderController extends Controller
     }
 
 
-    public function getSchoolOrders(Request $request)
+    public function getSchoolOrdersOld(Request $request)
 {
     try {
         $user = $request->user();
@@ -653,6 +654,32 @@ class OrderController extends Controller
         return sendError('حدث خطأ غير متوقع.', [], 500);
     }
 }
+    //getSchoolOrders
+    public function getSchoolOrders(Request$request){
+
+        $user = auth()->user();
+
+        $orders = Order::where('user_id',$user->id)->where('type','school')
+            ->where('payment_status','paid')
+            ->with(['child.user', 'child.school', 'orderProducts.product',
+                'orderProducts.size', 'orderDays', 'payment', 'address'])
+            ->paginate(10);
+        $data = OrdersSchoolsResource::collection($orders);
+
+        $data = [
+            'data' => $data,
+            'pagination' => [
+                'current_page' => $orders->currentPage(),
+                'last_page' => $orders->lastPage(),
+                'per_page' => $orders->perPage(),
+                'total' => $orders->total(),
+                'next_page_url' => $orders->nextPageUrl(),
+                'prev_page_url' => $orders->previousPageUrl(),
+            ]
+        ];
+        return sendResponse($data);
+
+    }
 
     // جلب الطلبات من نوع "store" الخاصة بالمستخدم الحالي (مع التصفية حسب الحالة: current أو completed)
     public function getStoreOrders(Request $request)
@@ -735,6 +762,12 @@ class OrderController extends Controller
         ])->find($id);
 
         if (!$order) return sendError('الطلب غير موجود.');
+        $data = new OrdersSchoolsResource($order);
+
+//        if ($order->type === 'store') {
+//            $data = new OrdersStoreResource($order);
+//        }
+        return sendResponse($data);
 
         $child = $order->child;
         $user = $child->user;
