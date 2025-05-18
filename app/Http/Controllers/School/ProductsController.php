@@ -20,7 +20,7 @@ class ProductsController extends Controller
 
     public function index(ProductsDataTable $dataTable)
     {
-        return $dataTable->render('dashboard.school.products.index');
+        return $dataTable->render('dashboard.school.Products.index');
     }
 
     public function create()
@@ -28,7 +28,7 @@ class ProductsController extends Controller
         $categories = Category::all();
         $suppliers = Supplier::all();
         $schools = School::all();
-        return view('dashboard.admin.products.create',compact('categories','suppliers','schools'));
+        return view('dashboard.admin.Products.create',compact('categories','suppliers','schools'));
     }
     //store
     public function store(StoreProductRequest $request)
@@ -87,7 +87,7 @@ class ProductsController extends Controller
 
 
         // عرض صفحة التعديل مع تمرير المنتج إلى الـ view
-        return view('dashboard.admin.products.edit', compact('product','categories'));
+        return view('dashboard.admin.Products.edit', compact('product','categories'));
     }
     //update
     public function update(StoreProductRequest $request , Product $product)
@@ -201,6 +201,7 @@ class ProductsController extends Controller
         $q = $request->get('q');
         $products = Product::where('name_ar', 'like', '%' . $q . '%')
             ->orWhere('name_en', 'like', '%' . $q . '%')
+            ->where('type','school')
             ->select('id', 'name_ar', 'name_en','image')
             ->limit(20)
             ->get();
