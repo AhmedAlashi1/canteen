@@ -199,8 +199,10 @@ class ProductsController extends Controller
     public function select(Request $request)
     {
         $q = $request->get('q');
-        $products = Product::where('name_ar', 'like', '%' . $q . '%')
-            ->orWhere('name_en', 'like', '%' . $q . '%')
+        $products = Product::where(function ($query) use ($q) {
+            $query->where('name_ar', 'like', '%' . $q . '%')
+                ->orWhere('name_en', 'like', '%' . $q . '%');
+        })
             ->where(function ($query) {
                 $query->whereNull('school_id')
                     ->orWhere('school_id', auth('school')->user()->id);
