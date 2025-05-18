@@ -61,8 +61,7 @@ class ProductsDataTable extends DataTable
         } else {
             return $model->newQuery()->with(['category'])
                 ->where('type','school')
-                ->where('school_id', auth('school')->user()->id)
-                ->orWhere('school_id', null);
+                ->whereIn('school_id', [auth('school')->user()->id, null]);
         }
     }
 
