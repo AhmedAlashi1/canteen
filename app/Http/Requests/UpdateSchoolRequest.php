@@ -32,7 +32,13 @@ class UpdateSchoolRequest extends FormRequest
             'phone1' => 'nullable|string|max:20',
             'phone2' => 'nullable|string|max:20',
             //edit email unique
-            'email' => 'nullable|email|max:255|unique:schools,email'.($this->school->id) ,
+//            'email' => 'nullable|email|max:255|unique:schools,email,' . $this->school->id,
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('schools', 'email')->ignore($this->school->id),
+            ],
             'location' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|boolean',
