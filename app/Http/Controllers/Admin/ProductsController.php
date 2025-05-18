@@ -20,7 +20,7 @@ class ProductsController extends Controller
 
     public function index(ProductsDataTable $dataTable)
     {
-        return $dataTable->render('dashboard.admin.products.index');
+        return $dataTable->render('dashboard.admin.Products.index');
     }
 
     public function create()
@@ -28,7 +28,7 @@ class ProductsController extends Controller
         $categories = Category::all();
         $suppliers = Supplier::all();
         $schools = School::all();
-        return view('dashboard.admin.products.create',compact('categories','suppliers','schools'));
+        return view('dashboard.admin.Products.create',compact('categories','suppliers','schools'));
     }
     //store
     public function store(StoreProductRequest $request)

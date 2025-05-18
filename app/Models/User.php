@@ -31,7 +31,8 @@ class User extends Authenticatable
         'device_type',
         'remember_token',
         'country_code',
-        'phone_not_code'
+        'phone_not_code',
+        'notifications_enabled'
 
         ];
 
