@@ -89,7 +89,7 @@
                                 <div class="col-md-6 col-12">
                                     <div class="form-group">
                                         <label for="schools">{{ __('general.schools') }}</label>
-                                        <select name="schools" id="schools" class="form-control select2-ajax" ></select>
+                                        <select name="school_id" id="schools" class="form-control select2-ajax" ></select>
                                         @error('schools')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                 </div>
@@ -98,7 +98,7 @@
                                 <div class="col-md-6 col-12">
                                     <div class="form-group">
                                         <label for="suppliers">{{ __('general.suppliers') }}</label>
-                                        <select name="suppliers" id="suppliers" class="form-control select2-ajax" ></select>
+                                        <select name="supplier_id" id="suppliers" class="form-control select2-ajax" ></select>
                                         @error('suppliers')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                 </div>
