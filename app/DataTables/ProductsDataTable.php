@@ -59,7 +59,10 @@ class ProductsDataTable extends DataTable
         if ($auth == 'admin') {
             return $model->newQuery()->with(['category', 'school']);
         } else {
-            return $model->newQuery()->with(['category'])->where('type','school');
+            return $model->newQuery()->with(['category'])
+                ->where('type','school')
+                ->where('school_id', auth('school')->user()->id)
+                ->orWhere('school_id', null);
         }
     }
 

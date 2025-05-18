@@ -202,6 +202,8 @@ class ProductsController extends Controller
         $products = Product::where('name_ar', 'like', '%' . $q . '%')
             ->orWhere('name_en', 'like', '%' . $q . '%')
             ->where('type','school')
+            ->where('school_id', auth('school')->user()->id)
+            ->orWhere('school_id', null)
             ->select('id', 'name_ar', 'name_en','image')
             ->limit(20)
             ->get();
