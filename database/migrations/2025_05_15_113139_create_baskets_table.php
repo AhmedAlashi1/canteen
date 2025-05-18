@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('baskets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('child_id')->constrained('children')->onDelete('cascade');
+            $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('type', ['school', 'store']);
             $table->json('items'); // school => [{product_id, quantity}], store => [{product_id, product_size_id, quantity}]

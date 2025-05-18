@@ -84,7 +84,8 @@ Route::middleware('auth:sanctum')->group(function () {
 //        "spatie/laravel-sitemap": "^6.2",
 
     // basket
-    Route::post('temp-basket', [BasketController::class, 'storeOrUpdate']);
+    Route::post('cart', [BasketController::class, 'storeOrUpdate']);
+    Route::get('cart', [BasketController::class, 'index']);
     Route::get('temp-basket/{child_id}/{type}', [BasketController::class, 'get']);
 
     //order

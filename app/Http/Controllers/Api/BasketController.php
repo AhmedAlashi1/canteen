@@ -3,16 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BasketResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Basket;
 use App\Models\Child;
+use App\Models\Product;
 use App\Models\ProductSize;
 use App\Models\SchoolProduct;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class BasketController extends Controller
 {
-    public function storeOrUpdate(Request $request)
+    public function storeOrUpdateOld(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'child_id' => 'required|exists:children,id',
@@ -81,6 +85,58 @@ class BasketController extends Controller
             'message' => 'تم حفظ السلة بنجاح.',
         ]);
     }
+    //storeOrUpdate
+    public function storeOrUpdate(Request $request){
+        $user = auth()->user();
+
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+            'product_size_id' => 'nullable|exists:product_sizes,id',
+        ]);
+        if ($validator->fails()) {
+            return sendError($validator->errors()->first());
+        }
+
+        $product = Product::where('id', $request->product_id)
+            ->where('status', 'active')
+            ->where('type', 'store')
+            ->first();
+        if (!$product) {
+            return sendError('المنتج غير موجود.');
+        }
+        if($request->product_size_id){
+            $productSize = ProductSize::where('id', $request->product_size_id)
+                ->where('product_id', $request->product_id)
+                ->first();
+            if (!$productSize) {
+                return sendError('الحجم غير تابع للمنتج.');
+            }
+            if ($request->quantity > $productSize->quantity) {
+                return sendError('الكمية غير متوفرة للحجم: ' . $productSize->size);
+            }
+        }
+        else{
+            if ($request->quantity > $product->quantity) {
+                return sendError('الكمية غير متوفرة للمنتج: ' . $product->name_ar);
+            }
+        }
+        //create or update basket
+        $basket = Basket::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'type' => 'store',
+                'product_id' => $request->product_id,
+                'product_size_id' => $request->product_size_id, // يمكن أن يكون null
+            ],
+            [
+                'quantity' => $request->quantity,
+            ]
+        );
+        return sendResponse($basket);
+
+    }
+
 
     public function get(Request $request, $child_id, $type)
     {
@@ -144,5 +200,23 @@ class BasketController extends Controller
             'message' => 'تم جلب السلة بنجاح.',
             'items' => $items,
         ]);
+    }
+
+    public function index(Request $request)
+    {
+        $user = auth()->user();
+
+        $basket = Basket::where('user_id', $user->id)->where('type', 'store')
+            ->with('product')
+            ->get();
+        if (!$basket) return sendError('السلة فارغة.');
+
+
+        $data = BasketResource::collection($basket);
+
+        return sendResponse($data);
+
+
+
     }
 }
