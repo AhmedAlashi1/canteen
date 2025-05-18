@@ -87,7 +87,7 @@ class ProductsController extends Controller
 
 
         // عرض صفحة التعديل مع تمرير المنتج إلى الـ view
-        return view('dashboard.admin.products.edit', compact('product','categories'));
+        return view('dashboard.admin.Products.edit', compact('product','categories'));
     }
     //update
     public function update(StoreProductRequest $request , Product $product)

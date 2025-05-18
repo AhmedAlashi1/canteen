@@ -242,6 +242,7 @@ return[
     'Order_status' => 'Order Status',
     'Order_total' => 'Order Total',
     'name' => 'Name',
+    'products' => 'Products'
 
 
 
