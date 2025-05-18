@@ -90,6 +90,12 @@ class SchoolController extends Controller
             $image_path = $this->uploadImage('admin', $request->image);
             $data['image'] = $image_path;
         }
+        //Password
+        if ($request->input('password')) {
+            $data['password'] = Hash::make($request->input('password'));
+        } else {
+            unset($data['password']);
+        }
 
         $school->update($data);
 

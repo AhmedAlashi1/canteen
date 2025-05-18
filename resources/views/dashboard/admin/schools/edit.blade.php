@@ -228,6 +228,35 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label-sm" for="password">{{__('general.Password')}}</label>
+                                        <input
+                                            name="password"
+                                            type="password"
+                                            id="password"
+                                            class="form-control form-control-sm @error('password') is-invalid @else {{ old('password') ? 'is-valid' : '' }} @enderror"
+                                            placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                                            required
+                                        />
+                                        @error('password')
+                                        <span class="col-form-label-sm text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label-sm" for="password_confirmation">{{__('general.Password confirmation')}}</label>
+                                        <input
+                                            type="password"
+                                            id="password_confirmation"
+                                            class="form-control form-control-sm @if(session('password_confirmation') && !session('errors')->has('password')) is-valid @endif"
+                                            name="password_confirmation"
+                                            placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                                        />
+                                    </div>
+                                </div>
 
                                 <!-- Status -->
                                 <div class="col-md-6 col-12">

@@ -33,12 +33,13 @@ class UpdateSchoolRequest extends FormRequest
             'phone2' => 'nullable|string|max:20',
             //edit email unique
             'email' => 'nullable|email|max:255|unique:schools,email'.($this->school->id) ,
-            'password' => 'required|string|min:6|confirmed',
             'location' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|boolean',
             'city_id' => 'required|exists:cities,id',
             'region_id' => 'required|exists:regions,id',
+            //Password
+            'password' => 'nullable|string|min:6|confirmed',
         ];
     }
 }
