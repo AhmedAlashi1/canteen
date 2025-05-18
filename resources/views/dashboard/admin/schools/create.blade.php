@@ -289,7 +289,6 @@
                                             multiple
                                             required
                                         >
-                                            //levels foreach
                                             @php
                                             $levels = \App\Models\Level::all();
                                             @endphp
