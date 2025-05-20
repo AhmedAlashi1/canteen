@@ -19,7 +19,24 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
+Route::get('/firebase-test', function () {
+    $fakeToken = 'fake_token_for_testing_purposes_only';
+    $title = 'Purchased Succesfully';
+    $body = 'Your Order no. #' . str_pad(20, 6, '0', STR_PAD_LEFT) . ' Purchased Successfully';
+    $data = [
+        'type' => 'order',
+        'order_id' => 20,
+    ];
+    $firebase = new \App\Services\FirebaseService();
+    $response = $firebase->sendNotificationToToken(
+        $fakeToken,
+        $title,
+        $body,
+        $data
+    );
 
+    return $response ? '✅ Notification sent' : '❌ Failed to send notification (check logs)';
+});
 Route::group(
     ['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localize']], // يمكن أن يكون middleware مختلف حسب إعداداتك
     function () {

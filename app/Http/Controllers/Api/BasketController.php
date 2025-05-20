@@ -215,8 +215,18 @@ class BasketController extends Controller
         $data = BasketResource::collection($basket);
 
         return sendResponse($data);
+    }
+    //destroy
+    public function destroy($id)
+    {
+        $user = auth()->user();
+        $basket = Basket::where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+        if (!$basket) return sendError('السلة فارغة.');
 
+        $basket->delete();
 
-
+        return sendResponse($basket,'تم حذف المنتج من السلة بنجاح.');
     }
 }

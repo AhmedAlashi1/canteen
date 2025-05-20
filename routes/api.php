@@ -19,7 +19,9 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\LevelController;
+use App\Http\Controllers\Api\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,15 +88,25 @@ Route::middleware('auth:sanctum')->group(function () {
     // basket
     Route::post('cart', [BasketController::class, 'storeOrUpdate']);
     Route::get('cart', [BasketController::class, 'index']);
+    Route::delete('cart/{id}', [BasketController::class, 'destroy']);
     Route::get('temp-basket/{child_id}/{type}', [BasketController::class, 'get']);
 
     //order
     Route::post('order/store-school', [OrderController::class, 'storeSchool']);
     Route::post('order/store', [OrderController::class, 'storeStore']);
-    Route::post('order/apply-coupon', [OrderController::class, 'applyCoupon']);
     Route::get('orders/store', [OrderController::class, 'getStoreOrders']);
     Route::get('orders/school', [OrderController::class, 'getSchoolOrders']);
     Route::get('order/{id}', [OrderController::class, 'showDetails']);
+
+    Route::post('apply-coupon', [CouponController::class, 'applyCoupon']);
+
+    //notification switch
+    Route::post('notification-switch', [UserController::class, 'notificationSwitch']);
+    //notification
+    Route::get('notification', [NotificationController::class, 'index']);
+
+
+
 
 
 });

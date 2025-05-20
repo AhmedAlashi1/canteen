@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             'image' => $this->image ? url($this->image) : null,
             'address' => $this->address,
             'device_type' => $this->device_type,
+            'notification_switch' => $this->notification_switch ? true : false,
 //            'activation_code' => $this->activation_code,
             'resend_code_count' => $this->resend_code_count,
             'status' => $this->status == 1 ? 'active' : ($this->status == '2' ? 'pending activation':'inactive') ,
