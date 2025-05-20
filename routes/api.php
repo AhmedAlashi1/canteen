@@ -90,7 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //order
     Route::post('order/store-school', [OrderController::class, 'storeSchool']);
-    Route::post('order/store-store', [OrderController::class, 'storeStore']);
+    Route::post('order/store', [OrderController::class, 'storeStore']);
     Route::post('order/apply-coupon', [OrderController::class, 'applyCoupon']);
     Route::get('orders/store', [OrderController::class, 'getStoreOrders']);
     Route::get('orders/school', [OrderController::class, 'getSchoolOrders']);

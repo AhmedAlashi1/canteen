@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrdersSchoolsResource;
+use App\Http\Resources\OrdersStoreResource;
 use App\Models\Basket;
 use App\Models\Child;
 use App\Models\Coupon;
@@ -11,6 +12,7 @@ use App\Models\Order;
 use App\Models\OrderDay;
 use App\Models\OrderProduct;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use App\Models\ProductSize;
 use App\Models\SchoolProduct;
 use App\Models\Setting;
@@ -241,58 +243,52 @@ class OrderController extends Controller
     public function storeStore(Request $request)
     {
         // [1] التحقق من البيانات
-        $validator = Validator::make($request->all(), [
-            'child_id' => 'required|exists:children,id',
-            'address_id' => 'required|exists:addresses,id',
-            'payment_id' => 'required|exists:payment_methods,id',
-            'coupon' => 'nullable|string',
-            'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.product_size_id' => 'required|exists:product_sizes,id',
-            'items.*.quantity' => 'required|integer|min:1',
-        ], [
-            'items.*.product_id.required' => 'الرجاء تحديد المنتج.',
-            'items.*.product_size_id.required' => 'الرجاء تحديد الحجم.',
-            'items.*.quantity.required' => 'الرجاء تحديد الكمية.',
-        ]);
+        $validator = Validator::make($request->all(),Order::$rulesApiStore);
 
         if ($validator->fails()) {
             return sendError($validator->errors()->first());
         }
 
-        // [2] تحميل الطفل والمستخدم
-        $child = Child::with('user')->find($request->child_id);
-        $user = $child->user;
+        $user = auth()->user();
 
         // [3] التحقق من كل منتج وحجم وتجهيز البيانات
         $total = 0;
         $orderProducts = [];
 
         foreach ($request->items as $item) {
-            $productSize = ProductSize::where('id', $item['product_size_id'])
+            $product = Product::where('id', $item['product_id'])
+                ->with('sizes')
+                ->first();
+            $product_size_id = $item['product_size_id'] ?? null;
+            $productSize = ProductSize::where('id', $product_size_id)
                 ->where('product_id', $item['product_id'])
                 ->first();
 
-            if (!$productSize) {
-                return sendError('الحجم المحدد لا يتبع المنتج.');
-            }
+            if ($productSize){
+                if ($item['quantity'] > $productSize->quantity) {
+                    return sendError('الكمية المطلوبة غير متوفرة للحجم: ' . $productSize->size);
+                }
 
-            if ($item['quantity'] > $productSize->quantity) {
-                return sendError('الكمية المطلوبة غير متوفرة للحجم: ' . $productSize->size);
-            }
 
-            $lineTotal = $productSize->price * $item['quantity'];
+            }else{
+               if ($item['quantity'] > $product->quantity) {
+                    return sendError('الكمية المطلوبة غير متوفرة للمنتج: ' . $product->name_ar);
+                }
+
+            }
+            $lineTotal = $product->price * $item['quantity'];
             $total += $lineTotal;
 
             $orderProducts[] = [
                 'product_id' => $item['product_id'],
-                'product_size_id' => $item['product_size_id'],
+                'product_size_id' => $item['product_size_id'] ?? null,
                 'quantity' => $item['quantity'],
-                'price' => $productSize->price,
+                'price' => $product->price,
                 'type' => 'store',
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
+
         }
 
         // [4] استرجاع قيمة الشحن من الإعدادات
@@ -314,7 +310,7 @@ class OrderController extends Controller
             }
 
             $usedCount = Order::where('coupon_id', $coupon->id)
-                ->where('child_id', $child->id)
+                ->where('user_id', $user->id)
                 ->count();
 
             if ($coupon->code_limit !== null && $usedCount >= $coupon->code_limit) {
@@ -333,9 +329,9 @@ class OrderController extends Controller
 
         // [7] إنشاء الطلب
         $order = Order::create([
-            'child_id' => $child->id,
+            'child_id' => null,
             'user_id' => $user->id,
-            'address_id' => $request->address_id,
+            'address_id' => $request->address_id ?? null,
             'type' => 'store',
             'status' => 'pending',
             'payment_status' => 'pending',
@@ -369,7 +365,7 @@ class OrderController extends Controller
                 }
             });
 
-            Basket::where('child_id', $child->id)->where('type', 'store')->delete();
+
 
             return sendResponse([
                 'success' => true,
@@ -414,8 +410,6 @@ class OrderController extends Controller
             ]);
             return sendError('فشل إنشاء رابط الدفع. الرجاء المحاولة لاحقاً.');
         }
-
-        Basket::where('child_id', $child->id)->where('type', 'store')->delete();
 
         return sendResponse([
             'success' => true,
@@ -555,8 +549,13 @@ class OrderController extends Controller
                     $schoolProduct->decrement('quantity', $orderProduct->quantity);
                 }
 
-                if ($order->type === 'store' && $productSize = $orderProduct->size) {
-                    $productSize->decrement('quantity', $orderProduct->quantity);
+                if ($order->type === 'store') {
+                    $product = Product::find($orderProduct->product_id);
+                    $product->decrement('quantity', $orderProduct->quantity);
+
+                    //delete basket where user_id
+                    Basket::where('user_id', $order->user_id)->delete();
+
                 }
             }
         });
@@ -661,6 +660,7 @@ class OrderController extends Controller
 
         $orders = Order::where('user_id',$user->id)->where('type','school')
             ->where('payment_status','paid')
+            ->orderBy('created_at','desc')
             ->with(['child.user', 'child.school', 'orderProducts.product',
                 'orderProducts.size', 'orderDays', 'payment', 'address'])
             ->paginate(10);
@@ -682,66 +682,37 @@ class OrderController extends Controller
     }
 
     // جلب الطلبات من نوع "store" الخاصة بالمستخدم الحالي (مع التصفية حسب الحالة: current أو completed)
+    //getStoreOrders
     public function getStoreOrders(Request $request)
     {
-        try {
-            // الحصول على المستخدم الحالي من التوكن
-            $user = $request->user();
-            if (!$user) return sendError('المستخدم غير مسجل دخول.');
+        $request->stetus = $request->status ?? 'current';
+        $user =auth()->user();
 
-            // إعداد معلمات التقسيم والفلترة
-            $page = max(1, (int) $request->input('page', 1));
-            $size = min(100, max(1, (int) $request->input('size', 10)));
-            $tab = $request->input('tab', 'current'); // current أو completed
+        $orders = Order::where('user_id',$user->id)->where('type','store')
+            ->where('payment_status','paid')
+            ->where('status',$request->status)
+            ->orderBy('created_at','desc')
+            ->with([ 'orderProducts.product',
+                'orderProducts.size', 'payment', 'address'])
 
-            // تجهيز الاستعلام على الطلبات من نوع store
-            $query = Order::with('orderProducts', 'child')
-                ->where('type', 'store')
-                ->whereHas('child', fn($q) => $q->where('user_id', $user->id));
+            ->paginate(10);
+        $data = OrdersStoreResource::collection($orders);
 
-            // تصفية حسب التبويب
-            if ($tab === 'completed') {
-                $query->where('status', 'delivered');
-            } else {
-                $query->where('status', '!=', 'delivered');
-            }
+        $data = [
+            'data' => $data,
+            'pagination' => [
+                'current_page' => $orders->currentPage(),
+                'last_page' => $orders->lastPage(),
+                'per_page' => $orders->perPage(),
+                'total' => $orders->total(),
+                'next_page_url' => $orders->nextPageUrl(),
+                'prev_page_url' => $orders->previousPageUrl(),
+            ]
+        ];
+        return sendResponse($data);
 
-            // شرط الدفع المؤكد
-            $query->where('payment_status', 'paid')
-                ->orderBy('created_at', 'desc');
 
-            // تنفيذ الاستعلام مع التقسيم
-            $paginator = $query->paginate($size, ['*'], 'page', $page);
 
-            // تنسيق الطلبات للعرض
-            $orders = collect($paginator->items())->map(function ($order) {
-                return [
-                    'order_id' => $order->id,
-                    'process_number' => '#' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
-                    'status' => ucfirst($order->status),
-                    'product_count' => $order->orderProducts->sum('quantity'),
-                    'total_cost' => number_format($order->total, 3) . ' KD',
-                    'time_ago' => $order->created_at->diffForHumans(),
-                ];
-            });
-
-            // إرجاع الطلبات مع معلومات التقسيم
-            return sendResponse([
-                'data' => $orders,
-                'pagination' => [
-                    'current_page' => $paginator->currentPage(),
-                    'per_page' => $paginator->perPage(),
-                    'total' => $paginator->total(),
-                    'last_page' => $paginator->lastPage(),
-                    'from' => $paginator->firstItem(),
-                    'to' => $paginator->lastItem(),
-                ]
-            ], 'تم جلب طلبات المتجر بنجاح.');
-
-        } catch (\Exception $e) {
-            Log::error('Store Orders Error: ' . $e->getMessage());
-            return sendError('حدث خطأ غير متوقع.', [], 500);
-        }
     }
 
 
@@ -762,11 +733,13 @@ class OrderController extends Controller
         ])->find($id);
 
         if (!$order) return sendError('الطلب غير موجود.');
-        $data = new OrdersSchoolsResource($order);
+        if ($order->type == 'school'){
+            $data = new OrdersSchoolsResource($order);
+        }else{
+            $data = new OrdersStoreResource($order);
+        }
 
-//        if ($order->type === 'store') {
-//            $data = new OrdersStoreResource($order);
-//        }
+
         return sendResponse($data);
 
         $child = $order->child;

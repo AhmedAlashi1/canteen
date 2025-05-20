@@ -19,6 +19,7 @@ class Order extends Model
         'transaction_id',
         'address_id',
         'type',
+        'shipping_fees',
     ];
 
     // علاقات مقترحة (اختياري حسب استخدامك)
@@ -55,6 +56,17 @@ class Order extends Model
     {
         return $this->hasMany(OrderDay::class);
     }
+
+    //apiRo
+    public static $rulesApiStore =  [
+        'address_id' => 'required|exists:addresses,id',
+        'payment_id' => 'required|exists:payment_methods,id',
+        'coupon' => 'nullable|string',
+        'items' => 'required|array|min:1',
+        'items.*.product_id' => 'required|exists:products,id',
+        'items.*.product_size_id' => 'nullable|exists:product_sizes,id',
+        'items.*.quantity' => 'required|integer|min:1',
+    ];
 
 }
 
