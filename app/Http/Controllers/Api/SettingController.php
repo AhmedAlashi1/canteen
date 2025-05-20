@@ -16,6 +16,7 @@ class SettingController extends Controller
 
         $data['privacy_policy'] = Setting::where('key_id',$privacy_policy)->first()->value;
         $data['rules_conditions'] = Setting::where('key_id',$rules_conditions)->first()->value;
+        $data['shipping_fees'] = Setting::where('key_id','shipping_fees')->first()->value ?? 0;
         $data['phone'] = Setting::where('key_id','phone')->first()->value;
         $data['tiktok'] = Setting::where('key_id','tiktok')->first()->value;
         $data['twitter'] = Setting::where('key_id','twitter')->first()->value;
