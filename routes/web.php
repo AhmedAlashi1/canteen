@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/firebase-test', function () {
-    $fakeToken = 'fake_token_for_testing_purposes_only';
+    $fakeToken = 'cT-0_kooShSPwAi-g_0vdy:APA91bEM8bzKX4UoTqiLYRvLKTOnZwHYzqHl0BKgUfsWnofnGYta0cKUHexemjn3RdfM3vGjaO7P2zPXzIRLVxWtcNwt_nZrynB39FwDgOTZuVELJ4ekhYA';
     $title = 'Purchased Succesfully';
     $body = 'Your Order no. #' . str_pad(20, 6, '0', STR_PAD_LEFT) . ' Purchased Successfully';
     $data = [
@@ -34,6 +34,7 @@ Route::get('/firebase-test', function () {
         $body,
         $data
     );
+    return $response;
 
     return $response ? '✅ Notification sent' : '❌ Failed to send notification (check logs)';
 });

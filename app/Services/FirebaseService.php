@@ -20,16 +20,16 @@ class FirebaseService
 
     public function sendNotificationToToken($token, $title, $body, $data = [])
     {
-        try {
+//        try {
             $message = CloudMessage::withTarget('token', $token)
                 ->withNotification(Notification::create($title, $body))
                 ->withData($data);
 
             return $this->messaging->send($message);
-        } catch (FirebaseException $e) {
-            logger()->error('Firebase send error: ' . $e->getMessage());
-            return false;
-        }
+//        } catch (FirebaseException $e) {
+//            logger()->error('Firebase send error: ' . $e->getMessage());
+//            return false;
+//        }
     }
 
     public function sendNotificationToTopic($topic, $title, $body, $data = [])
