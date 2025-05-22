@@ -480,7 +480,6 @@ class OrderController extends Controller
         $title = 'Purchased Succesfully';
         $body = 'Your Order no. #' . str_pad($order->id, 6, '0', STR_PAD_LEFT) . ' Purchased Successfully';
         $data = [
-            'type' => 'order',
             'order_id' => $order->id,
         ];
         $token = $user->device_token;

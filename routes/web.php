@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/firebase-test', function () {
+//    $fakeToken = 'fgevKU9S2kPhsm95H7ppPG:APA91bExhyaa7vRsBICwlbymKNJuev_I7dqJfQbsyWLCMXOomukLdu3WeYYbcCEbSoZtW2oxfaLH7jeKWV_YL4gKY4da9IO93ch9wYgzgWej-TWnitThoc4';
     $fakeToken = 'cT-0_kooShSPwAi-g_0vdy:APA91bEM8bzKX4UoTqiLYRvLKTOnZwHYzqHl0BKgUfsWnofnGYta0cKUHexemjn3RdfM3vGjaO7P2zPXzIRLVxWtcNwt_nZrynB39FwDgOTZuVELJ4ekhYA';
     $title = 'Purchased Succesfully';
     $body = 'Your Order no. #' . str_pad(20, 6, '0', STR_PAD_LEFT) . ' Purchased Successfully';
@@ -35,8 +36,6 @@ Route::get('/firebase-test', function () {
         $data
     );
     return $response;
-
-    return $response ? '✅ Notification sent' : '❌ Failed to send notification (check logs)';
 });
 Route::group(
     ['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localize']], // يمكن أن يكون middleware مختلف حسب إعداداتك

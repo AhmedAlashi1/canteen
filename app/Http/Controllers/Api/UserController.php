@@ -45,12 +45,21 @@ class UserController extends Controller
 
         return sendResponse(new UserResource($user));
     }
+    //destroy
+    public function destroy()
+    {
+        $user = Auth::user();
+        $user->delete();
+        return sendResponse(new UserResource($user));
+    }
+
     //notificationSwitch
     public function notificationSwitch(Request $request)
     {
         $user = Auth::user();
         $user->notification_switch = $request->status ?? true;
         $user->save();
+
         return sendResponse(new UserResource($user));
     }
 

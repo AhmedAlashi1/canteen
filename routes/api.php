@@ -60,6 +60,8 @@ Route::middleware('auth:sanctum')->group(function () {
     //profile
     Route::get('show-profile/{user_id?}', [UserController::class, 'show']);
     Route::post('update-profile', [UserController::class, 'update']);
+    //destroy
+    Route::delete('destroy-users', [UserController::class, 'destroy']);
 
     //home
     Route::get('home', [HomeController::class, 'home']);

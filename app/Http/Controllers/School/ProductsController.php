@@ -25,10 +25,10 @@ class ProductsController extends Controller
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::where('type', 'school')->get();
         $suppliers = Supplier::all();
         $schools = School::all();
-        return view('dashboard.admin.Products.create',compact('categories','suppliers','schools'));
+        return view('dashboard.school.Products.create',compact('categories','suppliers','schools'));
     }
     //store
     public function store(StoreProductRequest $request)
@@ -41,7 +41,7 @@ class ProductsController extends Controller
             'name_en' => $data['name_en'],
             'description_ar' => $data['description_ar'] ?? null,
             'description_en' => $data['description_en'] ?? null,
-            'status' => $data['status'] == 'active' ? 'active' : 'cancelled',
+            'status' => $data['status'] == 'pending',
             'type' => $data['type'],
             'school_id' => $data['school_id'] ?? null
         ];

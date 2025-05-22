@@ -17,6 +17,7 @@ class Admin extends Authenticatable
         'password',
         'image',
         'roles_name',
+        'remember_token',
     ];
 
 }

@@ -18,7 +18,7 @@
                         <h4 class="card-title">{{ __('general.Add Product') }}</h4>
                     </div>
                     <div class="card-body">
-                        <form class="form" action="{{ route('admin.products.store') }}" method="post" enctype="multipart/form-data">
+                        <form class="form" action="{{ route('school.products.store') }}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <!-- Name AR -->
