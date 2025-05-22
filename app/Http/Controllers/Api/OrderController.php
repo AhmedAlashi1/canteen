@@ -387,6 +387,42 @@ class OrderController extends Controller
         $paymentMethod = PaymentMethod::find($request->payment_id);
         $paymentMethodId = PaymentMethod::ALL_METHODS[$paymentMethod->slug] ?? 1;
 
+        if ($paymentMethod->slug === 'cash') {
+            // إذا كان الدفع كاش، نكمل مباشرة
+            DB::transaction(function () use ($order) {
+                $order->update([
+                    'status' => $order->type === 'store' ? 'pending' : 'completed',
+                    'payment_status' => 'paid',
+                ]);
+
+                // خصم الكميات
+                foreach ($order->orderProducts as $op) {
+                    if ($op->size) {
+                        $op->size->decrement('quantity', $op->quantity);
+                    } else {
+                        $product = Product::find($op->product_id);
+                        if ($product) {
+                            $product->decrement('quantity', $op->quantity);
+                        }
+                    }
+                }
+
+                // حذف السلة
+                Basket::where('user_id', $order->user_id)->delete();
+            });
+
+            return sendResponse([
+                'success' => true,
+                'message' => 'تم إنشاء الطلب بنجاح (دفع كاش).',
+                'payment_url' => null,
+                'order_id' => $order->id,
+                'total' => round($total, 3),
+                'discount' => round($discount, 3),
+                'final_total' => round($finalTotal, 3),
+                'free_order' => true,
+            ]);
+        }
+
         $invoiceData = [
             'InvoiceValue' => round($finalTotal, 3),
             'PaymentMethodId' => $paymentMethodId,
