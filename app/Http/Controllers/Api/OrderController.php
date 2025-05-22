@@ -365,9 +365,26 @@ class OrderController extends Controller
                     }
                 }
             });
-
-
-
+            $user = $order->user;
+            $title = 'Purchased Succesfully';
+            $body = 'Your Order no. #' . str_pad($order->id, 6, '0', STR_PAD_LEFT) . ' Purchased Successfully';
+            $data = [
+                'order_id' => $order->id,
+            ];
+            $token = $user->device_token;
+            if ($token) {
+                $firebase = new FirebaseService();
+                $sent = $firebase->sendNotificationToToken($token, $title, $body, $data);
+                if ($sent) {
+                    $user->notifications()->create([
+                        'order_id' => $order->id,
+                        'title' => $title,
+                        'body' => $body,
+                        'type' => 'order',
+                        'data' => json_encode($data),
+                    ]);
+                }
+            }
             return sendResponse([
                 'success' => true,
                 'message' => 'تم إنشاء الطلب بنجاح (طلب مجاني).',
@@ -385,6 +402,9 @@ class OrderController extends Controller
         $phone = substr($phone, -11);
 
         $paymentMethod = PaymentMethod::find($request->payment_id);
+        if (!$paymentMethod) {
+            return sendError('وسيلة الدفع غير موجودة.');
+        }
         $paymentMethodId = PaymentMethod::ALL_METHODS[$paymentMethod->slug] ?? 1;
 
         if ($paymentMethod->slug === 'cash') {
@@ -406,10 +426,31 @@ class OrderController extends Controller
                         }
                     }
                 }
-
+                //
                 // حذف السلة
                 Basket::where('user_id', $order->user_id)->delete();
             });
+            // إرسال إشعار للمستخدم
+            $user = $order->user;
+            $title = 'Purchased Succesfully';
+            $body = 'Your Order no. #' . str_pad($order->id, 6, '0', STR_PAD_LEFT) . ' Purchased Successfully';
+            $data = [
+                'order_id' => $order->id,
+            ];
+            $token = $user->device_token;
+            if ($token) {
+                $firebase = new FirebaseService();
+                $sent = $firebase->sendNotificationToToken($token, $title, $body, $data);
+                if ($sent) {
+                    $user->notifications()->create([
+                        'order_id' => $order->id,
+                        'title' => $title,
+                        'body' => $body,
+                        'type' => 'order',
+                        'data' => json_encode($data),
+                    ]);
+                }
+            }
 
             return sendResponse([
                 'success' => true,

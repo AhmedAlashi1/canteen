@@ -24,6 +24,8 @@ class FirebaseService
             $message = CloudMessage::withTarget('token', $token)
                 ->withNotification(Notification::create($title, $body))
                 ->withData($data);
+            //seve message to database
+
 //            return $this->messaging->send($message);
             return true;
         } catch (FirebaseException $e) {
