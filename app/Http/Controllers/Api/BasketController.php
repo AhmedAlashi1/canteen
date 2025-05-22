@@ -220,7 +220,7 @@ class BasketController extends Controller
     public function destroy($id)
     {
         $user = auth()->user();
-        $basket = Basket::where('id', $id)
+        $basket = Basket::where('product_id', $id)
             ->where('user_id', $user->id)
             ->first();
         if (!$basket) return sendError('السلة فارغة.');

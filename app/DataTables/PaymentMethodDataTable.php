@@ -16,12 +16,18 @@ class PaymentMethodDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function ($payment) {
-                return view('components.datatable.actions', [
-                    'id' => $payment->id,
-                    'routeEdit' => 'admin.payment-methods.edit',
-                    'routeDelete' => 'admin.payment-methods.destroy',
-                    'name' => App::getLocale() === 'ar' ? $payment->name_ar : $payment->name_en,
-                ]);
+                if ($payment->id !=5){
+                    return view('components.datatable.actions', [
+                        'id' => $payment->id,
+                        'routeEdit' => 'admin.payment-methods.edit',
+                        'routeDelete' => 'admin.payment-methods.destroy',
+                        'name' => App::getLocale() === 'ar' ? $payment->name_ar : $payment->name_en,
+                    ]);
+                }else{
+                    return '<span class="badge badge-danger">Not Allowed</span>';
+                }
+
+
             })
             ->editColumn('status', function ($payment) {
                 return $payment->status == 'active' ? 'Active' : 'Inactive';
