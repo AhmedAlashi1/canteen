@@ -24,5 +24,8 @@ class PaymentMethod extends Model
         'Visa' => 2,
         'Stc Pay' => 14,
         'Benefit' => 5,
+        //cash
+        'cash' => 3,
+
     ];
 }

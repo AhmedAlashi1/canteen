@@ -194,7 +194,58 @@ class OrderController extends Controller
         $phone = substr($phone, -11);
         $paymentMethod = PaymentMethod::find($request->payment_id);
         $paymentMethodId = PaymentMethod::ALL_METHODS[$paymentMethod->slug] ?? 1;
+        if (!$paymentMethod) {
+            $order->delete();
+            return sendError('وسيلة الدفع غير موجودة.');
+        }
+        if ($paymentMethod->slug === 'cash') {
+            // إذا كان الدفع كاش، نكمل مباشرة
+            DB::transaction(function () use ($order) {
+                $order->update([
+                    'status' => $order->type === 'store' ? 'pending' : 'completed',
+                    'payment_status' => 'paid',
+                ]);
 
+                //
+            });
+            foreach ($order->orderProducts as $orderProduct) {
+                if ($order->type === 'school' && $schoolProduct = $orderProduct->schoolProduct) {
+                    $schoolProduct->decrement('quantity', $orderProduct->quantity);
+                }
+            }
+            // إرسال إشعار للمستخدم
+            $user = $order->user;
+            $title = 'Purchased Succesfully';
+            $body = 'Your Order no. #' . str_pad($order->id, 6, '0', STR_PAD_LEFT) . ' Purchased Successfully';
+            $data = [
+                'order_id' => $order->id,
+            ];
+            $token = $user->device_token;
+            if ($token) {
+                $firebase = new FirebaseService();
+                $sent = $firebase->sendNotificationToToken($token, $title, $body, $data);
+                if ($sent) {
+                    $user->notifications()->create([
+                        'order_id' => $order->id,
+                        'title' => $title,
+                        'body' => $body,
+                        'type' => 'order',
+                        'data' => json_encode($data),
+                    ]);
+                }
+            }
+
+            return sendResponse([
+                'success' => true,
+                'message' => 'تم إنشاء الطلب بنجاح (دفع كاش).',
+                'payment_url' => null,
+                'order_id' => $order->id,
+                'total' => round($total, 3),
+                'discount' => round($discount, 3),
+                'final_total' => round($finalTotal, 3),
+                'free_order' => true,
+            ]);
+        }
         $invoiceData = [
             'InvoiceValue' => round($finalTotal, 3),
             'PaymentMethodId' => $paymentMethodId,
@@ -406,7 +457,6 @@ class OrderController extends Controller
             return sendError('وسيلة الدفع غير موجودة.');
         }
         $paymentMethodId = PaymentMethod::ALL_METHODS[$paymentMethod->slug] ?? 1;
-
         if ($paymentMethod->slug === 'cash') {
             // إذا كان الدفع كاش، نكمل مباشرة
             DB::transaction(function () use ($order) {
