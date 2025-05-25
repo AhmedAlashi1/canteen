@@ -91,6 +91,9 @@ return [
     'cancelled' => 'Cancelled',
     'new' => 'New',
     'preparing' => 'Preparing',
+    'body'=>'body',
+    'send' => 'Send',
+
 
 
 ];

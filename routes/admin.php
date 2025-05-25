@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\SchoolController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\notificationsController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -107,6 +108,11 @@ Route::prefix(LaravelLocalization::setLocale() . '/admin')->middleware(['web'])
             Route::resource('products', ProductsController::class);
             Route::get('school/select', [SchoolController::class, 'select'])->name('schools.select');
             Route::get('supplier/select', [SupplierController::class, 'select'])->name('suppliers.select');
+
+            //notifications
+            Route::get('notifications', [notificationsController::class, 'index'])->name('notifications.index');
+            Route::get('notifications/create', [notificationsController::class, 'create'])->name('notifications.create');
+            Route::post('notifications', [notificationsController::class, 'store'])->name('notifications.store');
 
 
         });

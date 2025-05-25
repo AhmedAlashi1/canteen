@@ -133,6 +133,12 @@
                     <div>{{__('general.contactUs')}}</div>
                 </a>
             </li>
+        <li class="menu-item {{ Route::is('admin.notifications.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.notifications.index') }}" class="menu-link side-sclaex">
+                <i class="menu-icon tf-icons ti ti-bell"></i>
+                <div>{{__('general.Notifications')}}</div>
+            </a>
+        </li>
 
         <!-- Settings Section -->
         <li class="menu-header">@lang('general.Settings')</li>
