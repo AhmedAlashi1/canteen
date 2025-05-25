@@ -16,9 +16,10 @@ class NotificationController extends Controller
 //        $notifications = $user->notifications()
 //            ->orderBy('id', 'desc')
 //            ->paginate(10);
-        $notifications = Notification::
-        where('user_id', $user->id)
-            ->OrWhere('user_id', null)
+        $notifications = Notification::where(function($query) use ($user) {
+            $query->where('user_id', $user->id)
+                ->orWhereNull('user_id');
+        })
             ->orderBy('id', 'desc')
             ->paginate(10);
 
