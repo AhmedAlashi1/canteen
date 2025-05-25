@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\NotificationsResource;
 use App\Http\Resources\SchoolProductResource;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -12,9 +13,15 @@ class NotificationController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $notifications = $user->notifications()
+//        $notifications = $user->notifications()
+//            ->orderBy('id', 'desc')
+//            ->paginate(10);
+        $notifications = Notification::
+        where('user_id', $user->id)
+            ->OrWhere('user_id', null)
             ->orderBy('id', 'desc')
             ->paginate(10);
+
         $data = NotificationsResource::collection($notifications);
 
         return sendResponse([
