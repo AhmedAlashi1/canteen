@@ -242,12 +242,20 @@ return[
     'Order_status' => 'Order Status',
     'Order_total' => 'Order Total',
     'name' => 'Name',
-    'products' => 'Products'
-
-
-
-
-
+    'products' => 'Products',
+    'Order Products' => 'Order Products',
+    'Created At' => 'Created At',
+    'Shipping Fees' => 'Shipping Fees',
+    'Products Count' => 'Products Count',
+    'delivering' => 'Delivering',
+    'completed' => 'Completed',
+    'cancelled' => 'Cancelled',
+    'new' => 'New',
+    'pending' => 'Pending',
+    'preparing' => 'Preparing',
+    'update status' => 'Update Status',
+    'save' => 'Save',
+    'close' => 'Close',
 
 
 

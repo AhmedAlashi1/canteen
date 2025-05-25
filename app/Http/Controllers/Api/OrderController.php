@@ -220,7 +220,7 @@ class OrderController extends Controller
             $data = [
                 'order_id' => $order->id,
             ];
-            $token = $user->device_token;
+            $token = $user->device_token ?? null;
             if ($token) {
                 $firebase = new FirebaseService();
                 $sent = $firebase->sendNotificationToToken($token, $title, $body, $data);
@@ -422,7 +422,7 @@ class OrderController extends Controller
             $data = [
                 'order_id' => $order->id,
             ];
-            $token = $user->device_token;
+            $token = $user->device_token ?? null;
             if ($token) {
                 $firebase = new FirebaseService();
                 $sent = $firebase->sendNotificationToToken($token, $title, $body, $data);
@@ -487,7 +487,7 @@ class OrderController extends Controller
             $data = [
                 'order_id' => $order->id,
             ];
-            $token = $user->device_token;
+            $token = $user->device_token ?? null;
             if ($token) {
                 $firebase = new FirebaseService();
                 $sent = $firebase->sendNotificationToToken($token, $title, $body, $data);
@@ -609,7 +609,7 @@ class OrderController extends Controller
         $data = [
             'order_id' => $order->id,
         ];
-        $token = $user->device_token;
+        $token = $user->device_token ?? null;
         if ($token) {
             $firebase = new FirebaseService();
             $sent = $firebase->sendNotificationToToken($token, $title, $body, $data);

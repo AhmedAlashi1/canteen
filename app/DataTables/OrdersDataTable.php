@@ -26,10 +26,13 @@ class OrdersDataTable extends DataTable
                     'id' => $order->id,
                     'routeShow' => 'admin.orders.show',
                     'routeDelete' => 'admin.orders.destroy',
+                    //ChangeStatus
+                    'routeChangeStatus' => 'admin.orders.changeStatus', // ← تأكد أن هذا موجود
                     'name' => $order->id,
                 ]);
             })
             ->addColumn('user', function ($order) {
+
                 return $order->user ? $order->user->name : '-';
             })
             ->addColumn('child', function ($order) {
@@ -40,10 +43,15 @@ class OrdersDataTable extends DataTable
                 return $order->child ? $order->child->school->name_en : '-';
             })
             ->addColumn('status', function ($order) {
+
                 $status = __( 'dataTable.' . $order->status );
                 $colors = [
                     'completed' => ['background' => 'green', 'text' => 'white'],
                     'pending' => ['background' => 'orange', 'text' => 'white'],
+                    'preparing' => ['background' => 'blue', 'text' => 'white'],
+                    'delivering' => ['background' => 'yellow', 'text' => 'black'],
+                    'cancelled' => ['background' => 'red', 'text' => 'white'],
+                    'new' => ['background' => 'purple', 'text' => 'white'],
                 ];
                 $color = $colors[$order->status] ?? ['background' => 'red', 'text' => 'white'];
                 // إنشاء الكود HTML باستخدام اللون المحدد
@@ -106,12 +114,18 @@ class OrdersDataTable extends DataTable
     public function query(Order $model)
     {
         $auth = auth()->guard('admin')->check() ? 'admin' : 'school';
+        //request->type
+        $type = request()->get('type');
+        if ($type) {
+            $model = $model->where('type', $type);
+        }
         //if school
         if ($auth == 'school') {
             $model = $model->whereHas('child.school', function ($q) {
                 $q->where('id', auth()->guard('school')->user()->id);
             });
         }
+
         return $model->newQuery()->with(['user', 'child.school']);
     }
 
@@ -127,23 +141,29 @@ class OrdersDataTable extends DataTable
 
     public function getColumns(): array
     {
-        $columns = [
-            Column::make('id')->title(__('dataTable.id')),
-            Column::make('user')->title(__('dataTable.father')),
-            Column::make('child')->title(__('dataTable.child')),
-            Column::make('student_number')->title(__('dataTable.student_number')),
-            Column::make('total')->title(__('dataTable.total')),
-            Column::make('status')->title(__('dataTable.status')),
-            Column::make('payment_status')->title(__('dataTable.payment_status')),
-            Column::make('created_at')->title(__('dataTable.created_at')),
-            Column::computed('action')->title(__('dataTable.action'))->exportable(false)->printable(false),
-        ];
-        if (auth()->guard('admin')->check()) {
-            $columns = array_merge($columns, [
-                Column::make('school')->title(__('dataTable.school')),
-                Column::make('type')->title(__('dataTable.type')),
-            ]);
+        $columns = [];
+        $columns[] =Column::make('id')->title(__('dataTable.id'));
+
+        $type = request()->get('type') == 'store' ? 'store' : 'school';
+        if ($type == 'store') {
+            $columns[] = Column::make('user')->title(__('dataTable.user'));
+        }else{
+            $columns[] = Column::make('user')->title(__('dataTable.father'));
+            $columns[] = Column::make('child')->title(__('dataTable.child'));
+            $columns[] = Column::make('student_number')->title(__('dataTable.student_number'));
+            if (auth()->guard('admin')->check()) {
+                $columns = array_merge($columns, [
+                    Column::make('school')->title(__('dataTable.school')),
+                ]);
+            }
         }
+        $columns[] = Column::make('total')->title(__('dataTable.total'));
+        $columns[] = Column::make('status')->title(__('dataTable.status'));
+        $columns[] = Column::make('payment_status')->title(__('dataTable.payment_status'));
+        $columns[] = Column::make('created_at')->title(__('dataTable.created_at'));
+        $columns[] = Column::make('action')->title(__('dataTable.action'));
+
+
         return $columns;
     }
 

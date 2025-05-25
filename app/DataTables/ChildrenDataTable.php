@@ -29,6 +29,11 @@ class ChildrenDataTable extends DataTable
 
                 return view('components.datatable.actions', $viewData);
             })
+            //level
+            ->addColumn('level', function ($child) {
+                return $child->level ? $child->level->name_en : '-';
+            })
+
             ->addColumn('image', function ($child) {
                 return view('components.datatable.image', ['photo' => $child->image]);
             })

@@ -38,4 +38,8 @@ return [
     'firebase' => [
         'credentials' => storage_path('firebase/firebase_credentials.json'),
     ],
+    'whatsapp' => [
+        'token' => env('WHATSAPP_TOKEN'),
+        'instance' => env('WHATSAPP_INSTANCE'),
+    ],
 ];

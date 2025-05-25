@@ -2,16 +2,10 @@
 
 namespace App\Helpers;
 
-use App\Models\Notifications;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\ConnectException;
 use Kreait\Firebase\Factory;
-use Kreait\Firebase\ServiceAccount;
-use Laravellevel\Message\OptionsBuilder;
-use Laravellevel\Message\PayloadDataBuilder;
-use Laravellevel\Message\PayloadNotificationBuilder;
 use Intervention\Image\ImageManagerStatic as Image;
-use level;
 
 /**
  * Class Helpers
@@ -63,13 +57,13 @@ trait Functions
     public function sendVerificationCode(string $phone, int $code,$update_phone = false): void
     {
         if ($update_phone){
-            $msg = 'Your Update Phone code is ' . $code . ' Welcome to Fit Row 💪🏻';
+            $msg = 'Your Update Phone code is ' . $code . ' Welcome to Smart Canteen 🏫';
         }else{
-        $msg = 'Your activation code is ' . $code . ' Welcome to Fit Row 💪🏻';
+        $msg = 'Your activation code is ' . $code . ' Welcome to Smart Canteen 🏫';
         }
         $this->whatsapp($phone, $msg);
     }
 
-    
+
 
 }

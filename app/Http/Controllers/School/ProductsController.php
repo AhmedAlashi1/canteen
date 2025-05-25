@@ -31,26 +31,27 @@ class ProductsController extends Controller
         return view('dashboard.school.Products.create',compact('categories','suppliers','schools'));
     }
     //store
-    public function store(StoreProductRequest $request)
+    public function store(Request $request)
     {
-        $data = $request->validated();
-
+        $data = $request->validate([
+            'cat_id' => 'required|exists:categories,id',
+            'name_ar' => 'required|string|max:255',
+            'name_en' => 'required|string|max:255',
+            'description_ar' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
         $productData = [
             'cat_id' => $data['cat_id'],
             'name_ar' => $data['name_ar'],
             'name_en' => $data['name_en'],
             'description_ar' => $data['description_ar'] ?? null,
             'description_en' => $data['description_en'] ?? null,
-            'status' => $data['status'] == 'pending',
-            'type' => $data['type'],
-            'school_id' => $data['school_id'] ?? null
+            'status' => 'pending',
+            'type' => 'school',
+            'school_id' => auth('school')->user()->id,
         ];
-
-        if ($data['type'] === 'store') {
-            $productData['price'] = $data['price'] ?? 0;
-            $productData['quantity'] = $data['quantity'] ?? 0;
-            $productData['supplier_id'] = $data['supplier_id'] ?? null;
-        }
 
 
         if ($request->has('image')) {
@@ -64,35 +65,27 @@ class ProductsController extends Controller
                 $product->images()->create(['image' => $image_path]);
             }
         }
-        if ($request->has('sizes')) {
-            foreach ($request->sizes as $size) {
-                if (!empty($size['name'])) {
-                    $product->sizes()->create([
-                        'size' => $size['name'],
-                        'price' => $size['price'] ?? 0,
-                        'quantity' => $size['quantity'] ?? 0,
-                    ]);
-                }
-            }
-        }
 
-        return redirect()->route('admin.products.index')->with('success', __('Product created successfully.'));
+        return redirect()->route('school.products.index')->with('success', __('Product created successfully.'));
     }
 
     public function edit(Product $product)
     {
-        // تحميل العلاقات المطلوبة
-        $product->load(['sizes', 'images']);
-        $categories = Category::all();
-
-
-        // عرض صفحة التعديل مع تمرير المنتج إلى الـ view
-        return view('dashboard.admin.Products.edit', compact('product','categories'));
+        $categories = Category::where('type', 'school')->get();
+        return view('dashboard.school.Products.edit', compact('product','categories'));
     }
     //update
-    public function update(StoreProductRequest $request , Product $product)
+    public function update(Request $request , Product $product)
     {
-        $data = $request->validated();
+        $data = $request->validate([
+            'cat_id' => 'required|exists:categories,id',
+            'name_ar' => 'required|string|max:255',
+            'name_en' => 'required|string|max:255',
+            'description_ar' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 //        return $data;
         $productData = [
             'cat_id' => $data['cat_id'],
@@ -100,20 +93,11 @@ class ProductsController extends Controller
             'name_en' => $data['name_en'],
             'description_ar' => $data['description_ar'] ?? null,
             'description_en' => $data['description_en'] ?? null,
-            'status' => $data['status'] == 'active' ? 'active' : 'cancelled',
-            'type' => $data['type'],
-            'school_id' => $data['school_id'] ?? null
+            'status' => 'pending',
+            'type' => 'school',
+            'school_id' => auth('school')->user()->id,
         ];
 
-        if ($data['type'] === 'store') {
-            $productData['price'] = $data['price'] ?? 0;
-            $productData['quantity'] = $data['quantity'] ?? 0;
-            $productData['supplier_id'] = $data['supplier_id'] ?? null;
-        } else {
-            // تأكد من تصفير القيم التي لا تنتمي إلى type = store
-            $productData['price'] = 0;
-            $productData['quantity'] = null;
-        }
 
         // صورة المنتج الرئيسية
         if ($request->hasFile('image')) {
@@ -140,38 +124,8 @@ class ProductsController extends Controller
             }
         }
 
-        // تحديث الأحجام
-        if ($request->has('sizes')) {
-            $existingSizeIds = [];
 
-            foreach ($request->sizes as $size) {
-                if (!empty($size['id'])) {
-                    // تحديث مقاس موجود
-                    $product->sizes()->updateOrCreate(
-                        ['id' => $size['id']],
-                        [
-                            'size' => $size['name'],
-                            'price' => $size['price'] ?? 0,
-                            'quantity' => $size['quantity'] ?? 0,
-                        ]
-                    );
-                    $existingSizeIds[] = $size['id'];
-                } elseif (!empty($size['name'])) {
-                    // إنشاء مقاس جديد
-                    $newSize = $product->sizes()->create([
-                        'size' => $size['name'],
-                        'price' => $size['price'] ?? 0,
-                        'quantity' => $size['quantity'] ?? 0,
-                    ]);
-                    $existingSizeIds[] = $newSize->id;
-                }
-            }
-            // حذف المقاسات غير المرسلة
-            $product->sizes()->whereNotIn('id', $existingSizeIds)->delete();
-        }
-
-
-        return redirect()->route('admin.products.index')->with('success', __('Product updated successfully.'));
+        return redirect()->route('school.products.index')->with('success', __('Product updated successfully.'));
     }
     //destroy
     public function destroy(Product $product)
@@ -187,8 +141,8 @@ class ProductsController extends Controller
         if (\File::exists(public_path($product->image))) {
             \File::delete(public_path($product->image));
         }
-        // حذف المقاسات
-        $product->sizes()->delete();
+        //schoolProducts
+        $product->schoolProducts()->delete();
 
         // حذف المنتج
         $product->delete();

@@ -28,6 +28,9 @@
                 </div>
             </div>
         </div>
+    {{ $content ?? '' }}
+
+
 @endsection
 @section('js')
     <!-- DATA TABLE JS -->

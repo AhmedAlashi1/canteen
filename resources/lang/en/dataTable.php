@@ -86,7 +86,11 @@ return [
     'quantity' => 'Quantity',
     'product' => 'Product',
     'supplier' => 'Supplier',
-
+    'category' => 'Category',
+    'delivering' => 'Delivering',
+    'cancelled' => 'Cancelled',
+    'new' => 'New',
+    'preparing' => 'Preparing',
 
 
 ];

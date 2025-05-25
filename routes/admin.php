@@ -60,6 +60,9 @@ Route::prefix(LaravelLocalization::setLocale() . '/admin')->middleware(['web'])
             Route::get('orders', [OrdersController::class, 'index'])->name('orders.index');
             Route::get('orders/{id}', [OrdersController::class, 'show'])->name('orders.show');
             Route::delete('orders/{id}', [OrdersController::class, 'destroy'])->name('orders.destroy');
+            //changeStatus
+            Route::post('orders/{order}/change-status', [OrdersController::class, 'changeStatus'])->name('orders.changeStatus');
+
 
 
 

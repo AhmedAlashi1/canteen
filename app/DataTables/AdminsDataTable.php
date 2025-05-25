@@ -26,6 +26,15 @@ class AdminsDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function ($admin) {
+                //if admin->id is 1, don't show  delete buttons
+                if ($admin->id == 1) {
+                    return view('components.datatable.actions', [
+                        'id' => $admin->id,
+                        'routeEdit' => 'admin.admins.edit',
+                        'name' => App::getLocale() === 'ar' ? $admin->name_ar : $admin->name_en,
+                    ]);
+                }
+
                 return view('components.datatable.actions', [
                     'id' => $admin->id,
                     'routeEdit' => 'admin.admins.edit',

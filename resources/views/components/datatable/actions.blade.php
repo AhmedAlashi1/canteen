@@ -40,6 +40,18 @@
     </a>
 @endif
 
+@if(!empty($routeChangeStatus))
+    <a href="#"
+{{--       class="btn btn-sm btn-outline-warning change-status-btn"--}}
+       class="btn btn-warning btn-sm rounded rounded-2 mb-2 mr-2 change-status-btn"
+       data-id="{{ $id }}"
+       data-name="{{ $name }}"
+       data-url="{{ route($routeChangeStatus, $id) }}"
+       title="{{ __('تغيير الحالة') }}">
+        <i class="bi bi-arrow-repeat"></i>
+    </a>
+@endif
+
 
 
 

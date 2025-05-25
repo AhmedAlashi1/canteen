@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\Functions;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    use Functions;
     public function login(Request $request)
     {
 
@@ -43,10 +45,7 @@ class AuthController extends Controller
             $activation_code = 1234;
         }
         $user->update(['status' => '2', 'activation_code' => $activation_code,]);
-//        $message_whatsapp = 'Your activation code is ' . $activation_code . '
-//        Welcome to Fit Row 💪🏻';
-//        $send = $this->whatsapp($user->phone, $message_whatsapp);
-//
+        $send = $this->sendVerificationCode($user->phone, $activation_code);
 //        if ($request->device_token) {
 //            $user->devices()->create([
 //                'token' => $request->device_token,
@@ -96,11 +95,10 @@ class AuthController extends Controller
         $data['status'] = '2';
 
         $user = User::query()->create($data);
+
 //        $success['token'] = $user->createToken('MyAuthApp')->plainTextToken;
         $success['name'] = $user->name;
-
-//        $this->sendVerificationCode($user->phone, $user->activation_code);
-
+        $this->sendVerificationCode($user->phone, $user->activation_code);
 //        if ($request->device_token) {
 //            $user->devices()->create([
 //                'token' => $request->device_token,

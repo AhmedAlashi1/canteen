@@ -19,5 +19,6 @@ class Authenticate extends Middleware
 
             return route('admin.login'); // الافتراضي
         }
+        return null; // إذا كان الطلب يتوقع JSON، لا حاجة لإعادة التوجيه
     }
 }

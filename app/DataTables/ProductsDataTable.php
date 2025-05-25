@@ -21,10 +21,17 @@ class ProductsDataTable extends DataTable
                 if ($auth === 'admin') {
                     $viewData['routeEdit'] = 'admin.products.edit';
                     $viewData['routeDelete'] = 'admin.products.destroy';
+                }else {
+                    $viewData['routeEdit'] = 'school.products.edit';
+//                    $viewData['routeDelete'] = 'school.products.destroy';
                 }
 
                 return view('components.datatable.actions', $viewData);
 
+            })
+            //school
+            ->editColumn('school', function ($product) {
+                return $product->school ? $product->school->name_en : 'all';
             })
             ->editColumn('image', function ($ads) {
                 return $ads->image ? '<img src="'.asset($ads->image).'" width="50" height="50">' : '';
@@ -84,16 +91,21 @@ class ProductsDataTable extends DataTable
         $columns[] = Column::make('image')->title(__('dataTable.image'))->orderable(false)->searchable(false);
         $columns[] = Column::make('name_ar')->title(__('dataTable.name'));
         $columns[] = Column::make('type')->title(__('dataTable.type'));
-        $columns[] = Column::make('price')->title(__('dataTable.price'));
-        $columns[] = Column::make('status')->title(__('dataTable.status'));
-        $columns[] = Column::make('created_at')->title(__('dataTable.created_at'));
 
         if (auth('admin')->check()) {
-            $columns[] =     Column::computed('action')
-                ->title(__('dataTable.action'))
-                ->exportable(false)
-                ->printable(false);
+            $columns[] = Column::make('price')->title(__('dataTable.price'));
+
+        }else{
+            $columns[] = Column::make('school')->title(__('dataTable.school'));
+              $columns[] = Column::make('category.name_ar')->title(__('dataTable.category'));
+
         }
+        $columns[] = Column::make('status')->title(__('dataTable.status'));
+        $columns[] = Column::make('created_at')->title(__('dataTable.created_at'));
+        $columns[] =     Column::computed('action')
+            ->title(__('dataTable.action'))
+            ->exportable(false)
+            ->printable(false);
         return $columns;
 
     }

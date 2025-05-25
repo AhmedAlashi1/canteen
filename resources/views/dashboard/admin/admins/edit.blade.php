@@ -78,7 +78,7 @@
 
                                 <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label class="col-form-label-sm" for="password_confirmation">{{__('general.')}} Password confirmation</label>
+                                        <label class="col-form-label-sm" for="password_confirmation">{{__('general.Password confirmation')}} </label>
                                         <input
                                             type="password"
                                             id="password_confirmation"

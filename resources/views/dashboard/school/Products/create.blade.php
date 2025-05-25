@@ -72,48 +72,6 @@
                                         @error('cat_id')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                 </div>
-                                <!-- Status -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group">
-                                        <label for="status">{{ __('general.status') }}</label>
-                                        <select name="status" id="status" class="form-control form-control-sm @error('status') is-invalid @enderror">
-                                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>{{ __('general.active') }}</option>
-                                            <option value="inactive" {{ old('status') != 'active' ? 'selected' : '' }}>{{ __('general.inactive') }}</option>
-                                        </select>
-                                        @error('status')<span class="text-danger">{{ $message }}</span>@enderror
-                                    </div>
-                                </div>
-
-
-                                <!-- School ID -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group">
-                                        <label for="schools">{{ __('general.schools') }}</label>
-                                        <select name="schools" id="school_id" class="form-control select2-ajax" ></select>
-                                        @error('schools')<span class="text-danger">{{ $message }}</span>@enderror
-                                    </div>
-                                </div>
-
-                                <!-- Supplier -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group">
-                                        <label for="suppliers">{{ __('general.suppliers') }}</label>
-                                        <select name="suppliers" id="supplier_id" class="form-control select2-ajax" ></select>
-                                        @error('suppliers')<span class="text-danger">{{ $message }}</span>@enderror
-                                    </div>
-                                </div>
-
-                                <!-- Type -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group">
-                                        <label for="type">{{ __('general.type') }}</label>
-                                        <select name="type" id="type" class="form-control form-control-sm @error('type') is-invalid @enderror">
-                                            <option value="school" {{ old('type') == 'school' ? 'selected' : '' }}>{{ __('general.school') }}</option>
-                                            <option value="store" {{ old('type') == 'store' ? 'selected' : '' }}>{{ __('general.store') }}</option>
-                                        </select>
-                                        @error('type')<span class="text-danger">{{ $message }}</span>@enderror
-                                    </div>
-                                </div>
 
                                 <div class="col-md-6 col-12">
                                     <div class="form-group">
@@ -122,29 +80,6 @@
                                         @error('image')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                 </div>
-
-                                <div id="store-fields" style="display: none;">
-                                    <!-- Price -->
-                                    <div class="row">
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="price">{{ __('general.price') }}</label>
-                                            <input type="number" step="0.01" name="price" id="price" class="form-control form-control-sm @error('price') is-invalid @enderror" value="{{ old('price') }}">
-                                            @error('price')<span class="text-danger">{{ $message }}</span>@enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Quantity -->
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="quantity">{{ __('general.quantity') }}</label>
-                                            <input type="number" name="quantity" id="quantity" class="form-control form-control-sm @error('quantity') is-invalid @enderror" value="{{ old('quantity') }}">
-                                            @error('quantity')<span class="text-danger">{{ $message }}</span>@enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                                <!-- Image -->
 
 
                                 <div class="col-md-12 col-12">
@@ -155,33 +90,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Sizes Section -->
-                                <div class="col-12">
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <button type="button" class="btn btn-sm btn-primary mt-1" id="add-size">{{ __('general.add_size') }}</button>
-                                        </div>
-                                    </div>
-                                    <br>
-
-                                    <div id="sizes-wrapper">
-                                        <!-- أول صف -->
-                                        <div class="row size-row mb-1" style="display: none;">
-                                            <div class="col-md-3">
-                                                <input type="text" name="sizes[0][name]" class="form-control form-control-sm" placeholder="{{ __('general.size') }}">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <input type="number" step="0.01" name="sizes[0][price]" class="form-control form-control-sm" placeholder="{{ __('general.price') }}">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <input type="number" name="sizes[0][quantity]" class="form-control form-control-sm" placeholder="{{ __('general.quantity') }}">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <button type="button" class="btn btn-sm btn-danger remove-size">{{ __('general.remove') }}</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
 
                                 <!-- Submit -->
@@ -198,91 +106,5 @@
 @endsection
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            function initSelect2(selector, url) {
-                $(selector).select2({
-                    placeholder: "{{ __('general.Choose') }}",
-                    minimumInputLength: 1,
-                    ajax: {
-                        url: url,
-                        dataType: 'json',
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                q: params.term
-                            };
-                        },
-                        processResults: function(data) {
-                            return {
-                                results: $.map(data, function(item) {
-                                    return {
-                                        id: item.id,
-                                        text: item.name
-                                    };
-                                })
-                            };
-                        },
-                        cache: true
-                    }
-                });
-            }
-
-            initSelect2('#schools', '{{ route('admin.schools.select') }}');
-            initSelect2('#suppliers', '{{ route('admin.suppliers.select') }}');
-        });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            let sizeIndex = 0;
-
-            $('#add-size').click(function () {
-                $('#sizes-wrapper').append(`
-                <div class="row size-row mb-1">
-                    <div class="col-md-3">
-                        <input type="text" name="sizes[${sizeIndex}][name]" class="form-control form-control-sm" placeholder="{{ __('general.size') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" step="0.01" name="sizes[${sizeIndex}][price]" class="form-control form-control-sm" placeholder="{{ __('general.price') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" name="sizes[${sizeIndex}][quantity]" class="form-control form-control-sm" placeholder="{{ __('general.quantity') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <button type="button" class="btn btn-sm btn-danger remove-size">{{ __('general.remove') }}</button>
-                    </div>
-                </div>
-            `);
-                sizeIndex++;
-            });
-
-            $(document).on('click', '.remove-size', function () {
-                $(this).closest('.size-row').remove();
-            });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            function toggleStoreFields() {
-                if ($('#type').val() === 'store') {
-                    $('#store-fields').show();
-                } else {
-                    $('#store-fields').hide();
-                }
-            }
-
-            // Initial check
-            toggleStoreFields();
-
-            // On change
-            $('#type').change(function () {
-                toggleStoreFields();
-            });
-        });
-    </script>
-
-
 @endsection
 

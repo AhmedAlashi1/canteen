@@ -7,8 +7,6 @@
 
     <style>
 
-
-
         .card + .card {
             margin-top: 2rem;
         }
@@ -72,8 +70,10 @@
 @endsection
 
 @section('content')
-
-
+    @php
+        $name = app()->getLocale() === 'ar' ? 'name_ar' : 'name_en';
+        $colors = ['info', 'warning', 'success', 'danger', 'primary', 'secondary'];
+    @endphp
     <section id="multiple-column-form">
         <div class="row">
             <div class="col-12">
@@ -93,7 +93,11 @@
                                         <div class="card-body text-secondary">
                                             <p><strong>{{ __('general.Name') }}:</strong> {{ $order->user?->name ?? '-' }}</p>
                                             <p><strong>{{ __('general.Phone') }}:</strong> {{ $order->user?->phone ?? '-' }}</p>
-                                            <p><strong>{{ __('general.Address') }}:</strong> {{ $order->address?->full ?? '-' }}</p>
+                                            <p><strong>{{ __('general.Address') }}:</strong>
+                                            {{ $order->address?->city->$name ?? '-' }}-{{ $order->address?->region->$name ?? '-' }}
+                                            </p>
+                                            <p><strong>{{ __('general.Created At') }}:</strong> {{ $order->created_at ? $order->created_at->diffForHumans() : '-' }}</p>
+
                                         </div>
                                     </div>
                                 </div>
@@ -111,25 +115,24 @@
                                             <p><strong>{{ __('general.Status') }}:</strong>
                                                 <span class="badge {{ $order->status === 'completed' ? 'bg-success' : 'bg-warning' }}">
                                                     {{ ucfirst($order->status) }}
-                    </span>
+                                        </span>
                                             </p>
                                             <p><strong>{{ __('general.Total') }}:</strong> {{ number_format($order->total, 2) }} KD</p>
                                             <p><strong>{{ __('general.Discount') }}:</strong> {{ number_format($order->discount, 2) }} KD</p>
+                                            <p><strong>{{ __('general.Shipping Fees') }}:</strong> {{ number_format($order->shipping_fees, 2) }} KD</p>
                                             <p><strong>{{ __('general.Payment Status') }}:</strong>
                                                 <span class="badge {{ $order->payment_status === 'paid' ? 'bg-success' : 'bg-danger' }}">
-                        {{ ucfirst($order->payment_status) }}
-                    </span>
+                                        {{ ucfirst($order->payment_status) }}
+                                    </span>
                                             </p>
-                                            <p><strong>{{ __('general.Payment ID') }}:</strong> {{ $order->payment_id ?? '-' }}</p>
-                                            <p><strong>{{ __('general.Transaction ID') }}:</strong> {{ $order->transaction_id ?? '-' }}</p>
+                                            <p><strong>{{ __('general.Products Count') }}:</strong> {{ $order->orderProducts->count()  }}</p>
+                                            <p><strong>{{ __('general.Payment ID') }}:</strong> {{ $order->payment->$name ?? '-' }}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            @php
-                                $colors = ['info', 'warning', 'success', 'danger', 'primary', 'secondary'];
-                            @endphp
-                            @if($order->orderDays && $order->orderDays->count())
+
+                            @if($order->orderDays && $order->orderDays->count() > 0 && $order->type === 'school')
                                 @foreach($order->orderDays->sortBy('date') as $dayIndex => $day)
                                     <div class="card mt-3 shadow-sm">
 {{--                                        <div class="card-header bg-light d-flex justify-content-between align-items-center">--}}
@@ -171,6 +174,45 @@
                                         </div>
                                     </div>
                                 @endforeach
+                            @endif
+
+                            @if($order->orderProducts && $order->orderProducts->count() > 0 && $order->type !== 'school')
+                                <div class="card mt-3 shadow-sm">
+
+                                    <div class="card-body">
+                                        <div class="card-header text-white" style="background-color: #7367f0 ;">
+                                            <h5 class="mb-0" style="color: #fff">{{ __('general.Order Products') }}</h5>
+                                        </div>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>{{ __('general.image') }}</th>
+                                                <th>{{ __('general.Product') }}</th>
+                                                <th>{{ __('general.size') }}</th>
+                                                <th>{{ __('general.Quantity') }}</th>
+                                                <th>{{ __('general.Price') }}</th>
+                                                <th>{{ __('general.Total') }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($order->orderProducts as $index => $product)
+                                                <tr>
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>
+                                                        <img src="{{ asset($product->product->image ?? 'logo.png') }}" alt="Product Image" width="60">
+                                                    </td>
+                                                    <td>{{ $product->product->name_en }}</td>
+                                                    <td>{{ $product->size ? $product->size->size : '-' }}</td>
+                                                    <td>{{ $product->quantity }}</td>
+                                                    <td>{{ number_format($product->price, 2) }} KD</td>
+                                                    <td>{{ number_format($product->price * $product->quantity, 2) }} KD</td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             @endif
 
                         </div>
