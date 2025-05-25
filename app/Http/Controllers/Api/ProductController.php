@@ -42,6 +42,9 @@ class ProductController extends Controller
                         });
                     }
                 })
+                ->whereHas('product.category', function ($query) {
+                    $query->where('status', 'active');
+                })
                 ->with('product.category')
                 ->orderBy('id', 'desc')
                 ->paginate(20);

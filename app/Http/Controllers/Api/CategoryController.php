@@ -29,9 +29,7 @@ class CategoryController extends Controller
                 ->whereHas('product', function ($query) use ($type) {
                     $query->where('type', $type)->where('status', 'active');
                 })
-                ->whereHas('product.category', function ($query) {
-                    $query->where('status', 'active');
-                })
+
                 ->where('school_id', $child->school_id)
                 ->get()
                 ->pluck('product.cat_id')
