@@ -217,7 +217,7 @@
                 const html = `
                     <div class="row size-row mb-1">
                         <div class="col-md-3">
-                            <input type="text" name="sizes[${sizeIndex}][size]" class="form-control form-control-sm" placeholder="{{ __('general.name') }}">
+                            <input type="text" name="sizes[${sizeIndex}][name]" class="form-control form-control-sm" placeholder="{{ __('general.name') }}">
                         </div>
                         <div class="col-md-3">
                             <input type="number" step="0.01" name="sizes[${sizeIndex}][price]" class="form-control form-control-sm" placeholder="{{ __('general.price') }}">

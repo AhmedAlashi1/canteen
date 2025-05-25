@@ -143,7 +143,7 @@ class ProductsController extends Controller
         // تحديث الأحجام
         if ($request->has('sizes')) {
             $existingSizeIds = [];
-
+//            return $request->sizes;
             foreach ($request->sizes as $size) {
                 if (!empty($size['id'])) {
                     // تحديث مقاس موجود
