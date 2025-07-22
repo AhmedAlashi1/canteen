@@ -40,6 +40,7 @@ Route::get('/firebase-test', function () {
 });
 
 Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
+    \Illuminate\Support\Facades\Log::info('Webhook Request:', $request->all());
     $from = $request->input('from'); // رقم المرسل
     $message = $request->input('body'); // الرسالة المُستلمة
 
@@ -51,15 +52,17 @@ Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
         ],
         'temperature' => 0.7,
     ]);
+    \Illuminate\Support\Facades\Log::info('ChatGPT response:', $chatResponse->json());
 
     $reply = $chatResponse['choices'][0]['message']['content'] ?? 'حدث خطأ في الرد.';
 
     // إرسال الرد إلى رقم واتساب عبر UltraMsg
-    Http::post("https://api.ultramsg.com/instance" . env('ULTRAMSG_INSTANCE_ID') . "/messages/chat", [
+    $ultraResponse = Http::post("https://api.ultramsg.com/instance" . env('ULTRAMSG_INSTANCE_ID') . "/messages/chat", [
         'token' => env('ULTRAMSG_TOKEN'),
         'to' => $from,
         'body' => $reply,
     ]);
+    \Illuminate\Support\Facades\Log::info('UltraMsg response:', $ultraResponse->json());
 
     return response()->json(['status' => 'sent']);
 });
