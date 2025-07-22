@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\LevelController;
 use App\Http\Controllers\Api\NotificationController;
+use Illuminate\Support\Facades\Http;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,33 @@ use App\Http\Controllers\Api\NotificationController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
+    \Illuminate\Support\Facades\Log::info('Webhook Request:', $request->all());
+    $from = $request->input('from'); // رقم المرسل
+    $message = $request->input('body'); // الرسالة المُستلمة
+
+    // إرسال الرسالة إلى ChatGPT
+    $chatResponse = Http::withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/chat/completions', [
+        'model' => 'gpt-4o',
+        'messages' => [
+            ['role' => 'user', 'content' => $message],
+        ],
+        'temperature' => 0.7,
+    ]);
+    \Illuminate\Support\Facades\Log::info('ChatGPT response:', $chatResponse->json());
+
+    $reply = $chatResponse['choices'][0]['message']['content'] ?? 'حدث خطأ في الرد.';
+
+    // إرسال الرد إلى رقم واتساب عبر UltraMsg
+    $ultraResponse = Http::post("https://api.ultramsg.com/instance" . env('ULTRAMSG_INSTANCE_ID') . "/messages/chat", [
+        'token' => env('ULTRAMSG_TOKEN'),
+        'to' => $from,
+        'body' => $reply,
+    ]);
+    \Illuminate\Support\Facades\Log::info('UltraMsg response:', $ultraResponse->json());
+
+    return response()->json(['status' => 'sent']);
+});
 
 
 
