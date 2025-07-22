@@ -37,6 +37,11 @@ Route::get('/firebase-test', function () {
     );
     return $response;
 });
+
+//test
+Route::get('/test', function () {
+    return view('test');
+});
 Route::group(
     ['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localize']], // يمكن أن يكون middleware مختلف حسب إعداداتك
     function () {
