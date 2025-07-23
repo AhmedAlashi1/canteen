@@ -52,7 +52,7 @@ Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
     }
 
     // استخراج الرقم الحقيقي من from (مثال: 96560011329@c.us => +96560011329)
-    $phone = '+' . preg_replace('/@.*/', '', $from);
+    $phone = '+' . preg_replace('/@c\.us$/', '', $from);
 
     // ChatGPT
     $chatResponse = Http::withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/chat/completions', [
