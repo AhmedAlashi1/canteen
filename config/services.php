@@ -42,4 +42,9 @@ return [
         'token' => env('WHATSAPP_TOKEN'),
         'instance' => env('WHATSAPP_INSTANCE'),
     ],
+
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+    ],
+
 ];

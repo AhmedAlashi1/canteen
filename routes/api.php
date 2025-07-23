@@ -22,8 +22,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\LevelController;
 use App\Http\Controllers\Api\NotificationController;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Api\ChatGPTWhatsAppController;
 
 
 /*
@@ -36,47 +35,8 @@ use Illuminate\Support\Facades\Log;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
-    Log::info('Webhook Request:', $request->all());
 
-    $data = $request->input('data');
-
-    $messageText = $data['body'] ?? null;
-    $from = $data['from'] ?? null;
-    $fromMe = $data['fromMe'] ?? true;
-
-    // تأكد أن الرسالة من المستخدم وليس من البوت نفسه
-    if (!$messageText || !$from || $fromMe) {
-        Log::info('Ignored message: empty or from self.');
-        return response()->json(['status' => 'ignored']);
-    }
-
-    // استخراج الرقم الحقيقي من from (مثال: 96560011329@c.us => +96560011329)
-    $phone = '+' . preg_replace('/@c\.us$/', '', $from);
-
-    // ChatGPT
-    $chatResponse = Http::withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/chat/completions', [
-        'model' => 'gpt-4o',
-        'messages' => [
-            ['role' => 'user', 'content' => $messageText],
-        ],
-        'temperature' => 0.7,
-    ]);
-
-    Log::info('ChatGPT response:', $chatResponse->json());
-    $reply = $chatResponse['choices'][0]['message']['content'] ?? 'حدث خطأ في الرد.';
-
-    // إرسال عبر UltraMsg
-    $ultraResponse = Http::asForm()->post("https://api.ultramsg.com/" . env('ULTRAMSG_INSTANCE_ID') . "/messages/chat", [
-        'token' => env('ULTRAMSG_TOKEN'),
-        'to' => $phone,
-        'body' => $reply,
-    ]);
-
-    Log::info('UltraMsg response:', $ultraResponse->json());
-
-    return response()->json(['status' => 'done']);
-});
+Route::post('/webhook/whatsapp',[ChatGPTWhatsAppController::class,'webhook']);
 
 
 
