@@ -37,18 +37,24 @@ use Illuminate\Support\Facades\Log;
 |
 */
 Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
-
     Log::info('Webhook Request:', $request->all());
 
-    $messageText = $request->input('data.body');
-    $from = $request->input('data.from');
+    $data = $request->input('data');
 
-    if (!$messageText || !$from) {
-        Log::error('Missing message text or sender');
-        return response()->json(['status' => 'missing data']);
+    $messageText = $data['body'] ?? null;
+    $from = $data['from'] ?? null;
+    $fromMe = $data['fromMe'] ?? true;
+
+    // تأكد أن الرسالة من المستخدم وليس من البوت نفسه
+    if (!$messageText || !$from || $fromMe) {
+        Log::info('Ignored message: empty or from self.');
+        return response()->json(['status' => 'ignored']);
     }
 
-    // ChatGPT request
+    // استخراج الرقم الحقيقي من from (مثال: 96560011329@c.us => +96560011329)
+    $phone = '+' . preg_replace('/@.*/', '', $from);
+
+    // ChatGPT
     $chatResponse = Http::withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/chat/completions', [
         'model' => 'gpt-4o',
         'messages' => [
@@ -58,13 +64,12 @@ Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
     ]);
 
     Log::info('ChatGPT response:', $chatResponse->json());
-
     $reply = $chatResponse['choices'][0]['message']['content'] ?? 'حدث خطأ في الرد.';
 
-    // UltraMsg request
-    $ultraResponse = Http::post("https://api.ultramsg.com/" . env('ULTRAMSG_INSTANCE_ID') . "/messages/chat", [
+    // إرسال عبر UltraMsg
+    $ultraResponse = Http::asForm()->post("https://api.ultramsg.com/" . env('ULTRAMSG_INSTANCE_ID') . "/messages/chat", [
         'token' => env('ULTRAMSG_TOKEN'),
-        'to' => $from,
+        'to' => $phone,
         'body' => $reply,
     ]);
 
@@ -72,6 +77,7 @@ Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
 
     return response()->json(['status' => 'done']);
 });
+
 
 
 Route::get('settings', SettingController::class);
