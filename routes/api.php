@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Log;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/webhook/whatsapp/118881', function (\Illuminate\Http\Request $request) {
+Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
 
     Log::info('Webhook Request:', $request->all());
 
