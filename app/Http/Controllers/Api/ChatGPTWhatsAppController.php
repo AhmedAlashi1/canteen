@@ -48,7 +48,7 @@ class ChatGPTWhatsAppController extends Controller
 
     protected function askChatGPT($message)
     {
-        $apiKey = config('services.openai.api_key');
+        $apiKey = config('services.openai.key');
 
         $response = Http::withToken($apiKey)
             ->post('https://api.openai.com/v1/chat/completions', [
