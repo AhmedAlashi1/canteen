@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ChatGPTWhatsAppController extends Controller
 {
+
     public function webhook(Request $request)
     {
         Log::info('Webhook Request: ' . json_encode($request->all()));
@@ -28,19 +29,29 @@ class ChatGPTWhatsAppController extends Controller
 
         $myNumber = '96565145361'; // رقم النظام الرسمي
 
+        // ✅ تجاهل الرسائل من نفس الرقم أو إذا كانت فارغة
         if (!$message || !$from || str_contains($from, $myNumber)) {
             Log::info('Ignored message: empty or from self.');
             return response()->json(['status' => 'ignored']);
         }
 
+        // ✅ تجاهل رسائل المجموعات
+        if (Str::endsWith($from, '@g.us')) {
+            Log::info('Ignored group message.');
+            return response()->json(['status' => 'ignored - group']);
+        }
+
+        // ✅ التحقق من التكرار
         if (Cache::has("ultramsg:msg:$messageId")) {
             Log::info("Message $messageId already processed.");
             return response()->json(['status' => 'duplicate']);
         }
 
+        // ✅ معالجة GPT والرد
         $gptReply = $this->askChatGPT($message);
         $this->sendWhatsAppMessage($from, $gptReply);
 
+        // ✅ منع التكرار لاحقًا
         Cache::put("ultramsg:msg:$messageId", true, now()->addMinutes(10));
 
         return response()->json(['status' => 'replied']);
