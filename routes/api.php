@@ -62,7 +62,7 @@ Route::post('/webhook/whatsapp', function (\Illuminate\Http\Request $request) {
     $reply = $chatResponse['choices'][0]['message']['content'] ?? 'حدث خطأ في الرد.';
 
     // UltraMsg request
-    $ultraResponse = Http::post("https://api.ultramsg.com/instance" . env('ULTRAMSG_INSTANCE_ID') . "/messages/chat", [
+    $ultraResponse = Http::post("https://api.ultramsg.com/instance/" . env('ULTRAMSG_INSTANCE_ID') . "/messages/chat", [
         'token' => env('ULTRAMSG_TOKEN'),
         'to' => $from,
         'body' => $reply,
