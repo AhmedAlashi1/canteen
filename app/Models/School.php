@@ -28,6 +28,8 @@ class School extends Model implements AuthenticatableContract
         'city_id',
         'region_id',
         'password',
+        'website_url',
+        'instagram_url',
 
     ];
     protected $casts = [

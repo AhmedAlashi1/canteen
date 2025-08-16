@@ -258,6 +258,8 @@
         'close' => 'Close',
         'Notifications' => 'Notifications',
         'Add Notifications' => 'Add Notifications',
+        'instagram_url' => 'instagram url',
+        'website_url' => 'website url',
 
 
     ];

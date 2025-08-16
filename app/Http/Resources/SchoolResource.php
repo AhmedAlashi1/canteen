@@ -35,6 +35,8 @@ class SchoolResource extends JsonResource
           'phone2' => $this->phone2,
           'email' => $this->email,
           'location' => $this->location,
+          'website_url' => $this->website_url,
+          'instagram_url' => $this->instagram_url,
 
       ];
     }

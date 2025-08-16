@@ -154,6 +154,42 @@
                                     </div>
                                 </div>
 
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label-sm" for="location">{{__('general.website_url')}}</label>
+                                        <input
+                                            value="{{ old('website_url') }}"
+                                            name="website_url"
+                                            type="text"
+                                            id="website_url"
+                                            class="form-control form-control-sm @error('website_url') is-invalid @else {{ old('website_url') ? 'is-valid' : '' }} @enderror"
+                                            placeholder="website url"
+
+                                        />
+                                        @error('website_url')
+                                        <span class="col-form-label-sm text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label-sm" for="location">{{__('general.instagram_url')}}</label>
+                                        <input
+                                            value="{{ old('instagram_url') }}"
+                                            name="instagram_url"
+                                            type="text"
+                                            id="instagram_url"
+                                            class="form-control form-control-sm @error('instagram_url') is-invalid @else {{ old('instagram_url') ? 'is-valid' : '' }} @enderror"
+                                            placeholder="instagram url"
+
+                                        />
+                                        @error('instagram_url')
+                                        <span class="col-form-label-sm text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
 
                                 <!-- Phone 1 -->
                                 <div class="col-md-6 col-12">

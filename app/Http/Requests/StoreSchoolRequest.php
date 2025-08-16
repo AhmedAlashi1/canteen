@@ -35,6 +35,8 @@ class StoreSchoolRequest extends FormRequest
             'email' => 'nullable|email|max:255|unique:schools,email' ,
             'password' => 'required|string|min:6|confirmed',
             'location' => 'nullable|string',
+            'website_url' => 'nullable|url|max:255',
+            'instagram_url' => 'nullable|url|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|boolean',
             'city_id' => 'required|exists:cities,id',
