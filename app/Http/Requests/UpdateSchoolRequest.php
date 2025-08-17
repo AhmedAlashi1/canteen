@@ -39,7 +39,7 @@ class UpdateSchoolRequest extends FormRequest
                 'max:255',
                 Rule::unique('schools', 'email')->ignore($this->school->id),
             ],
-            'location' => 'nullable|string',
+            'location' => 'nullable|url|max:255',
             'website_url' => 'nullable|url|max:255',
             'instagram_url' => 'nullable|url|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
