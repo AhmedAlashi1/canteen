@@ -274,7 +274,7 @@
                                             id="password"
                                             class="form-control form-control-sm @error('password') is-invalid @else {{ old('password') ? 'is-valid' : '' }} @enderror"
                                             placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                            required
+
                                         />
                                         @error('password')
                                         <span class="col-form-label-sm text-danger">{{ $message }}</span>
