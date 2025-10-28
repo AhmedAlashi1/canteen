@@ -108,15 +108,18 @@ class CouponController extends Controller
             ->where('use_number', '>', 0)
             ->whereDate('end_at', '>=', now())
             ->first();
+        $lang = $request->header('lang');
         if (!$copupon) {
-            return sendError('رمز الكوبون غير صالح أو منتهي الصلاحية.');
+            $massageError = $lang == 'en' ? 'The coupon code is invalid or expired.' : 'رمز الكوبون غير صالح أو منتهي الصلاحية.';
+            return sendError($massageError);
         }
+        $massage = $lang == 'en' ? 'The coupon has been applied successfully.' : 'تم تطبيق الكوبون بنجاح.';
         return sendResponse([
             'discount' => $copupon->discount,
             'type' => $copupon->type,
             'use_number' => $copupon->use_number,
             'end_at'=> $copupon->end_at
-        ], 'تم تطبيق الكوبون بنجاح.');
+        ], $massage);
 
     }
 }

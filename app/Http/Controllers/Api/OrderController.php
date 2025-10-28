@@ -142,7 +142,9 @@ class OrderController extends Controller
 
             if (!$coupon) {
                 $order->delete();
-                return sendError('الكوبون غير صالح أو منتهي.');
+                $lang = $request->header('lang');
+                $massage = $lang == 'ar' ? 'الكوبون غير صالح أو منتهي.' : 'The coupon is invalid or expired.';
+                return sendError($massage);
             }
 
             $usedCount = Order::where('coupon_id', $coupon->id)
